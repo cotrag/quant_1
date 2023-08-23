@@ -1,0 +1,110 @@
+---
+title: "Assignment 1"
+author: "Connor Tragesser"
+date: "2023-08-23"
+output: pdf_document
+---
+
+Begin by preparting the environment. the working directory needs to be set where your data will be available, and the packages are necessary for this exercise.
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_knit$set(root.dir = "/Users/connortragesser/Documents/Political Science Coursework Readings/Quant 1/Problem Set 1/")
+getwd()
+library(foreign)
+library(tidyverse)
+
+
+```
+
+## Problem 1
+
+### Part A
+
+A measure of the total number of points scored in an OSU basketball game is discrete. It lands on a set of whole numbers, and is countable.
+
+### Part B
+
+Using polls to determine the support for Bernie Sanders' Presidential primary bid among American voters is an example of inference. We take a sample of the population, find its characteristcs, and draw population conclusions based on it.
+
+### Part C
+
+The population for this study is 11.5 Million residents.
+
+### Part D
+
+????
+
+## Problem 2
+
+This was completed during our math camp before the start of the semester.
+
+## Problem 3
+
+This was completed during our math camp before the start of the semester.
+
+## Problem 4
+
+```{r}
+# import data
+fh_data <- read.dta("fh.dta")
+head(fh_data)
+```
+
+### Part A
+
+```{r}
+print(fh_data$fh_cl[23])
+
+```
+
+The answer is 3.
+
+### Part B
+
+### Part C
+
+```{r}
+
+# generate new variable 
+
+fh_data_addvar <- fh_data %>% 
+  mutate(fh_clpr = fh_cl + fh_pr)
+
+# Print 87th observation
+print(fh_data_addvar$fh_clpr[87])
+
+```
+
+The answer is 11.
+
+### Part D
+
+```{r}
+# Print 4th observation of the added variable
+print(fh_data_addvar$fh_clpr[4])
+
+# Print the entire 4th observation to try to diagnose issue
+print(fh_data_addvar[4,])
+
+```
+
+The answer is NA. This is because the political rights score is NA, while there is a value for the civil liberties score.
+
+### Part E
+
+```{r}
+
+# Generate new dataset based on prescribed filter
+vector_cl_trim <- fh_data %>% 
+  filter(fh_cl > 3)
+
+# Count number of observations
+print(count(vector_cl_trim))
+# Add the fh_cl variable
+print(sum(vector_cl_trim$fh_cl))
+
+
+```
+
+There are 87 observations in this vector. This column adds up to 446.
