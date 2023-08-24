@@ -5,15 +5,15 @@ date: "2023-08-23"
 output: pdf_document
 ---
 
-Begin by preparting the environment. the working directory needs to be set where your data will be available, and the packages are necessary for this exercise.
+Begin by preparing the environment. the working directory needs to be set where your data will be available (meaning, you will need to change this for your computer), and the packages are necessary for this exercise. I'm also clearing the environment before beginning.
 
-```{r setup, include=FALSE}
+```{r setup}
 knitr::opts_chunk$set(echo = TRUE)
 knitr::opts_knit$set(root.dir = "/Users/connortragesser/Documents/Political Science Coursework Readings/Quant 1/Problem Set 1/")
 getwd()
 library(foreign)
 library(tidyverse)
-
+rm(list = ls()) 
 
 ```
 
@@ -61,6 +61,18 @@ print(fh_data$fh_cl[23])
 The answer is 3.
 
 ### Part B
+
+Per https://irows.ucr.edu/research/tsmstudy/wbcountrycodes.htm, the country code for Germany is "DEU".
+
+```{r Germ}
+fh_dta_germany <- fh_data %>% 
+  filter(ccodewb == "DEU")
+
+print(fh_dta_germany$fh_pr)
+
+```
+
+The political rights score for Germany is 1
 
 ### Part C
 
