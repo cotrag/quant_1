@@ -62,7 +62,7 @@ The answer is 3.
 
 ### Part B
 
-Per https://irows.ucr.edu/research/tsmstudy/wbcountrycodes.htm, the country code for Germany is "DEU".
+Per the link [HERE](https://irows.ucr.edu/research/tsmstudy/wbcountrycodes.htm) (press cmnd/cntrl + click to follow), the country code for Germany is "DEU".
 
 ```{r Germ}
 fh_dta_germany <- fh_data %>% 
