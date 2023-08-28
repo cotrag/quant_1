@@ -5,7 +5,7 @@ date: "2023-08-23"
 output: pdf_document
 ---
 
-Begin by preparing the environment. the working directory needs to be set where your data will be available (meaning, you will need to change this for your computer), and the packages are necessary for this exercise. I'm also clearing the environment before beginning.
+Begin by preparing the environment. The working directory needs to be set where your data will be available (meaning, you will need to change this for your computer), and the packages that are necessary for this exercise need to be loaded from the library (this assumes they are already installed). I'm also clearing the environment before beginning.
 
 ```{r setup}
 knitr::opts_chunk$set(echo = TRUE)
