@@ -10,7 +10,7 @@ rm(list = ls())
 fh_data <- read.dta("fh.dta")
 head(fh_data)
 
-# 23rd observation of CL in the dataset
+# 23rd observation of CL in the dataset 
 print(fh_data$fh_cl[23])
 
 # Filter for Germany
