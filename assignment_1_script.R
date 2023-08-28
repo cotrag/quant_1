@@ -20,7 +20,6 @@ fh_dta_germany <- fh_data %>%
 # Print the PR variable for Germany
 print(fh_dta_germany$fh_pr)
 
-
 # generate new variable 
 
 fh_data_addvar <- fh_data %>% 
