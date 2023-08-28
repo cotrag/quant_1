@@ -1,17 +1,19 @@
 ---
 title: "Assignment 1"
 author: "Connor Tragesser"
-date: "2023-08-23"
+date: "2023-08-28"
 output: pdf_document
 ---
 
-Begin by preparing the environment. The working directory needs to be set where your data will be available (meaning, you will need to change this for your computer), and the packages that are necessary for this exercise need to be loaded from the library (this assumes they are already installed). I'm also clearing the environment before beginning.
+Begin by preparing the environment. The working directory needs to be set where your data will be available (meaning, you will need to change this for your computer), and the packages that are necessary for this exercise need to be loaded from the library (this assumes they are already installed). I'm also clearing the environment before beginning. 
 
 ```{r setup}
 library(foreign)
 library(tidyverse)
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = TRUE, tidy = TRUE)
+
 knitr::opts_knit$set(root.dir = "/Users/connortragesser/Documents/Political Science Coursework Readings/Quant 1/Problem Set 1/")
+
 getwd()
 rm(list = ls()) 
 
@@ -106,7 +108,8 @@ The answer is NA. This is because the political rights score is NA, while there 
 
 ```{r}
 
-# Generate new dataset based on prescribed filter
+# Generate new dataset based on prescribed filter (I'm assuming the NA's are meant to be
+# included, based on the wording of the 2nd part of the question)
 
 vector_cl_trim <- fh_data %>% 
   filter(fh_cl > 3 | is.na(fh_cl))
