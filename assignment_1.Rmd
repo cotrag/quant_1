@@ -69,7 +69,6 @@ fh_dta_germany <- fh_data %>%
   filter(ccodewb == "DEU")
 
 print(fh_dta_germany$fh_pr)
-
 ```
 
 The political rights score for Germany is 1
@@ -108,15 +107,16 @@ The answer is NA. This is because the political rights score is NA, while there 
 ```{r}
 
 # Generate new dataset based on prescribed filter
+
 vector_cl_trim <- fh_data %>% 
-  filter(fh_cl > 3)
+  filter(fh_cl > 3 | is.na(fh_cl))
 
 # Count number of observations
 print(count(vector_cl_trim))
 # Add the fh_cl variable
-print(sum(vector_cl_trim$fh_cl))
+print(sum(vector_cl_trim$fh_cl, na.rm = TRUE))
 
 
 ```
 
-There are 87 observations in this vector. This column adds up to 446.
+There are 90 observations in this vector, where NAs are included. This column adds up to 446.
