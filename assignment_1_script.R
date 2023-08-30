@@ -1,5 +1,6 @@
 # CODE REPRODUCTION
 
+# Setup
 setwd("/Users/connortragesser/Documents/Political Science Coursework Readings/Quant 1/Problem Set 1/")
 getwd()
 library(foreign)
@@ -10,13 +11,16 @@ rm(list = ls())
 fh_data <- read.dta("fh.dta")
 head(fh_data)
 
+# Part A
 # 23rd observation of CL in the dataset 
 print(fh_data$fh_cl[23])
 
+# Part B
 # Filter for Germany
 fh_dta_germany <- fh_data %>% 
   filter(ccodewb == "DEU")
 
+# Part C
 # Print the PR variable for Germany
 print(fh_dta_germany$fh_pr)
 
@@ -28,12 +32,14 @@ fh_data_addvar <- fh_data %>%
 # Print 87th observation
 print(fh_data_addvar$fh_clpr[87])
 
+# Part D
 # Print 4th observation of the added variable
 print(fh_data_addvar$fh_clpr[4])
 
 # Print the entire 4th observation to try to diagnose issue
 print(fh_data_addvar[4,])
 
+# Part E
 # Generate new dataset based on prescribed filter
 
 vector_cl_trim <- fh_data %>% 

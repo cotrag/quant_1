@@ -1,6 +1,6 @@
 ---
 title: "Assignment 1"
-author: "Connor Tragesser"
+author: "Connor Tragesser, discussed with Kristen Adams, Edward Howe, Jinglong Guo, Jae Chang, Jae Eun Jun, Soyun Chang, Ryo Sawayma, Cece Kinney, and Alice"
 date: "2023-08-28"
 output: html_document
 ---
