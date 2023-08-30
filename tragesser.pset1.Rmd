@@ -1,0 +1,125 @@
+---
+title: "Assignment 1"
+author: "Connor Tragesser, discussed with Kristen Adams, Edward Howe, Jinglong Guo, Jae Chang, Jae Eun Jun, Soyun Chang, Ryo Sawayma, Cece Kinney, and Alice"
+date: "2023-08-28"
+output: html_document
+---
+
+Begin by preparing the environment. The working directory needs to be set where your data will be available (meaning, you will need to change this for your computer), and the packages that are necessary for this exercise need to be loaded from the library (this assumes they are already installed). I'm also clearing the environment before beginning. 
+
+```{r setup}
+library(foreign)
+library(tidyverse)
+knitr::opts_chunk$set(echo = TRUE, tidy = TRUE)
+
+knitr::opts_knit$set(root.dir = "/Users/connortragesser/Documents/Political Science Coursework Readings/Quant 1/Problem Set 1/")
+
+getwd()
+rm(list = ls()) 
+
+```
+
+## Problem 1
+
+### Part A
+
+A measure of the total number of points scored in an OSU basketball game is discrete. It lands on a set of whole numbers, and is countable.
+
+### Part B
+
+Using polls to determine the support for Bernie Sanders' Presidential primary bid among American voters is an example of inference. We take a sample of the population, find its characteristcs, and draw population conclusions based on it.
+
+### Part C
+
+The population for this study is 11.5 Million residents.
+
+### Part D
+
+An analysis of the effects of war on presidential vote share and A comparison of the differences in graduation rates between different Greek houses are observational studies. They don't involve researcher control, and gather data from the real wold (non-experimental setting) to make conclusions.
+
+## Problem 2
+
+This was completed during our math camp before the start of the semester.
+
+## Problem 3
+
+This was completed during our math camp before the start of the semester.
+
+## Problem 4
+
+```{r}
+# import data
+fh_data <- read.dta("fh.dta")
+head(fh_data)
+```
+
+### Part A
+
+```{r}
+print(fh_data$fh_cl[23])
+
+```
+
+The answer is 3.
+
+### Part B
+
+Per the link [HERE](https://irows.ucr.edu/research/tsmstudy/wbcountrycodes.htm) (press cmnd/cntrl + click to follow), the country code for Germany is "DEU".
+
+```{r Germ}
+fh_dta_germany <- fh_data %>% 
+  filter(ccodewb == "DEU")
+
+print(fh_dta_germany$fh_pr)
+```
+
+The political rights score for Germany is 1
+
+### Part C
+
+```{r}
+
+# generate new variable 
+
+fh_data_addvar <- fh_data %>% 
+  mutate(fh_clpr = fh_cl + fh_pr)
+
+# Print 87th observation
+print(fh_data_addvar$fh_clpr[87])
+
+```
+
+The answer is 11.
+
+### Part D
+
+```{r}
+# Print 4th observation of the added variable
+print(fh_data_addvar$fh_clpr[4])
+
+# Print the entire 4th observation to try to diagnose issue
+print(fh_data_addvar[4,])
+
+```
+
+The answer is NA. This is because the political rights score is NA, while there is a value for the civil liberties score.
+
+### Part E
+
+```{r}
+
+# Generate new dataset based on prescribed filter (I'm assuming the NA's are meant to be
+# included, based on the wording of the 2nd part of the question)
+
+vector_cl_trim <- fh_data %>% 
+  filter(fh_cl > 3 | is.na(fh_cl))
+
+# Count number of observations
+print(count(vector_cl_trim))
+# Add the fh_cl variable
+print(sum(vector_cl_trim$fh_cl, na.rm = TRUE))
+
+
+```
+
+There are 90 observations in this vector, where NAs are included. This column adds up to 446.
