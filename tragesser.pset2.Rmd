@@ -24,7 +24,13 @@ rm(list = ls())
 
 ### Part A (Gailmard 2.1)
 
+Display equation: $$equation$$
+
 ### Part B (Gailmard 2.2)
+
+Known: When $$Y_i = K \times X_i,  \sigma_y = K \times \sigma_x$$ And $$Y_i = K + X_i,  \sigma_y = \sigma_x$$
+
+Therefore, given A and B are constant, when A is added and X is multiplied by $\beta$, $$\sigma_y = \beta \times \sigma_x$$
 
 ### Part C (Gailmard 2.3)
 
