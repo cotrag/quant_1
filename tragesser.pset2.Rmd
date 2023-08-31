@@ -1,0 +1,106 @@
+---
+title: "tragesser.pset2"
+author: "Connor Tragesser"
+date: "2023-08-31"
+output: html_document
+---
+
+Begin by preparing the environment. The working directory needs to be set where your data will be available (meaning, you will need to change this for your computer), and the packages that are necessary for this exercise need to be loaded from the library (this assumes they are already installed). I'm also clearing the environment before beginning. 
+
+```{r setup}
+library(foreign)
+library(tidyverse)
+library(modelsummary)
+knitr::opts_chunk$set(echo = TRUE, tidy = TRUE)
+
+knitr::opts_knit$set(root.dir = "/Users/connortragesser/Documents/Political Science Coursework Readings/Quant 1/Problem Set 2/")
+
+getwd()
+rm(list = ls()) 
+
+```
+
+## Problem 1
+
+### Part A (Gailmard 2.1)
+
+### Part B (Gailmard 2.2)
+
+### Part C (Gailmard 2.3)
+
+### Part D (Gailmard 2.5)
+
+## Problem 2
+
+Read in necessary data.
+
+```{r}
+
+fh_data <- read.dta("fh.dta")
+
+```
+
+
+### Part A
+```{r}
+
+summary(fh_data$fh_cl)
+summary(fh_data$fh_pr)
+count(fh_data)
+non_na_counter <- function(x){
+  z <- fh_data %>% 
+  dplyr::filter(!is.na({{x}})) %>% 
+  count()
+  return(z)
+}
+
+non_na_counter(fh_cl)
+non_na_counter(fh_pr)
+
+```
+
+There are 194 observations, and the summary gives us 3 NA's for fh_cl and 4 NA's for fh_pr, meaning that there are 191 non-missing observations for fh_cl and 190 non-missing observations for fh_pr. Or, you can calculate using a function as I've printed above.
+
+### Part B
+
+```{r}
+
+fh_data <- fh_data %>% 
+  mutate(fh_clpr = (fh_cl + fh_pr)/2) %>% 
+  mutate(fh_status = ifelse(fh_clpr >= 1 & fh_clpr < 3, 1, 
+                ifelse(fh_clpr >= 3 & fh_clpr <= 5, 2,
+                ifelse(fh_clpr > 5 , 3, 99))))
+
+fh_data$fh_status <- as.factor(fh_data$fh_status)
+levels(fh_data$fh_status) <- c("Free", "Partly Free", "Not Free")
+summary(fh_data$fh_status)
+
+# Percentage Table, not including NAs
+prop.table(table(fh_data$fh_status))
+
+# Percentage Table, including NAs
+test <- fh_data %>% 
+  group_by((fh_status)) %>% 
+  count()
+
+test <- test %>% 
+  mutate(pct = n/sum(n))
+
+test$pct = test$n/sum(test$n)
+print(test)
+
+```
+
+The proportion table is printed above. These calculations do not include NAs. 46.5% of countries are "Free" 26.7% of countries are "Partly Free" and 26.7% of countries are "Not Free". I also calculated the percentages when NA values are included in the denominator
+
+## Problem 3
+
+
+```{r}
+cces_data <- read.dta("cces.dta")
+
+liner_model = lm(stewart ~ pid7, data = cces_data)
+modelsummary(liner_model, coef_rename = c("pid7" = "Party Identification"))
+```
+
+This model demonstrates a non-significant relationship between party identification and favorability It implies that for each 1 positive step in the 1 to 7 scale from strong Democrat to strong Republican, there is a .456 drop in favorability, also measured on a 1 to 7 scale.
