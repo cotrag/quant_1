@@ -11,7 +11,7 @@ Begin by preparing the environment. The working directory needs to be set where 
 library(foreign)
 library(tidyverse)
 library(modelsummary)
-knitr::opts_chunk$set(echo = TRUE, tidy = TRUE)
+knitr::opts_chunk$set(echo = TRUE)
 
 knitr::opts_knit$set(root.dir = "/Users/connortragesser/Documents/Political Science Coursework Readings/Quant 1/Problem Set 2/")
 
