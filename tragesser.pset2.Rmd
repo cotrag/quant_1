@@ -30,7 +30,7 @@ Display equation: $$equation$$
 
 Known: When $$Y_i = K \times X_i,  \sigma_y = K \times \sigma_x$$ And $$Y_i = K + X_i,  \sigma_y = \sigma_x$$
 
-Therefore, given A and B are constant, when A is added and X is multiplied by $\beta$, $$\sigma_y = \beta \times \sigma_x$$
+Given A and B are constant, when A is added and X is multiplied by $\beta$, $$\sigma_y = \beta \times \sigma_x$$
 
 ### Part C (Gailmard 2.3)
 
@@ -106,7 +106,7 @@ The proportion table is printed above. These calculations do not include NAs. 46
 cces_data <- read.dta("cces.dta")
 
 liner_model = lm(stewart ~ pid7, data = cces_data)
-modelsummary(liner_model, coef_rename = c("pid7" = "Party Identification"))
+modelsummary(liner_model, coef_rename = c("pid7" = "Party Identification"), stars = TRUE)
 ```
 
-This model demonstrates a non-significant relationship between party identification and favorability It implies that for each 1 positive step in the 1 to 7 scale from strong Democrat to strong Republican, there is a .456 drop in favorability, also measured on a 1 to 7 scale.
+This model demonstrates a statistically significant relationship between party identification and Jon Stewart favorability. It implies that for each 1 positive step in the 1 to 7 scale from strong Democrat to strong Republican, there is a .456 drop in Jon Stewart favorability, also measured on a 1 to 7 scale.
