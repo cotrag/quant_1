@@ -75,7 +75,7 @@ fh_data <- fh_data %>%
   mutate(fh_clpr = (fh_cl + fh_pr)/2) %>% 
   mutate(fh_status = ifelse(fh_clpr >= 1 & fh_clpr < 3, 1, 
                 ifelse(fh_clpr >= 3 & fh_clpr <= 5, 2,
-                ifelse(fh_clpr > 5 , 3, 99))))
+                ifelse(fh_clpr > 5 , 3, NA))))
 
 fh_data$fh_status <- as.factor(fh_data$fh_status)
 levels(fh_data$fh_status) <- c("Free", "Partly Free", "Not Free")
