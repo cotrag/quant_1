@@ -12,7 +12,7 @@ library(foreign)
 library(tidyverse)
 library(modelsummary)
 library(formatR)
-knitr::opts_chunk$set(echo = TRUE, tidy = TRUE)
+knitr::opts_chunk$set(echo = TRUE)
 
 knitr::opts_knit$set(root.dir = "/Users/connortragesser/Documents/Political Science Coursework Readings/Quant 1/Problem Set 2/")
 
@@ -58,7 +58,7 @@ non_na_counter <- function(x){
   z <- fh_data %>% 
   dplyr::filter(!is.na({{x}})) %>% 
   count()
-  paste("we have", z$n, "non-missing values for this column")
+  return(paste("We have", z$n, "non-missing values for the column",  enexpr(x)))
 }
 
 non_na_counter(fh_cl)
