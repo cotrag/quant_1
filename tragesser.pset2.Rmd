@@ -1,11 +1,11 @@
 ---
 title: "tragesser.pset2"
-author: "Connor Tragesser"
+author: "Connor Tragesser, discussed with Abdullah Jaber, Kristen Adams, Edward Howe, Jinglong Guo, Jae Chang, Jae Eun Jun, Soyun Chang, Ryo Sawayma, Cece Kinney, and Alice Moon"
 date: "2023-08-31"
 output: html_document
 ---
 
-Begin by preparing the environment. The working directory needs to be set where your data will be available (meaning, you will need to change this for your computer), and the packages that are necessary for this exercise need to be loaded from the library (this assumes they are already installed). I'm also clearing the environment before beginning. 
+Begin by preparing the environment. The working directory needs to be set where your data will be available (meaning, you will need to change this for your computer), and the packages that are necessary for this exercise need to be loaded from the library (this assumes they are already installed). I'm also clearing the environment before beginning.
 
 ```{r setup}
 library(foreign)
@@ -26,7 +26,7 @@ rm(list = ls())
 
 ### Part A (Gailmard 2.1)
 
-Show  $s_x^2 = \frac{\sum_{}x_i^2}{N-1} - \frac{N\bar{x}}{N-1}$
+Show $s_x^2 = \frac{\sum_{}x_i^2}{N-1} - \frac{N\bar{x}}{N-1}$
 
 $$s_x^2=\frac{\sum_{}(x_i-\bar{x})^2}{N-1}$$
 
@@ -53,17 +53,20 @@ expected value, can look it up (hasn't been covered yet), see chapter 4.
 Known: $b = \frac{rs_y}{s_x}$ and $a = \bar{y} - b\bar{x}$
 
 #### A
+
 B is multiplied by C and A is multiplied by C
 
 #### B
+
 B is multiplied by 1/D, A is unchanged
 
 #### C
+
 B is unchanged, A increases by G
 
 #### D
-B is unchanged, A decreases by H
 
+B is unchanged, A decreases by H
 
 ## Problem 2
 
@@ -75,8 +78,8 @@ fh_data <- read.dta("fh.dta")
 
 ```
 
-
 ### Part A
+
 ```{r}
 # add IQR and SD
 summary(fh_data$fh_cl)
@@ -129,7 +132,6 @@ print(test)
 The proportion table is printed above. These calculations do not include NAs. 46.5% of countries are "Free" 26.7% of countries are "Partly Free" and 26.7% of countries are "Not Free". I also calculated the percentages when NA values are included in the denominator.
 
 ## Problem 3
-
 
 ```{r}
 cces_data <- read.dta("cces.dta")
