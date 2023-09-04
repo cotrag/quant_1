@@ -25,7 +25,15 @@ rm(list = ls())
 
 ### Part A (Gailmard 2.1)
 
-Display equation: $$equation$$
+Show  $s_x^2 = \frac{\sum_{}x_i^2}{N-1} - \frac{N\bar{x}}{N-1}$
+
+$$s_x^2 = \frac{\sum_{}(x_i-\bar{x})^2}{N-1}$$
+$$s_x^2 = \frac{\sum_{}x_i^2}{N-1} - \frac{2\bar{x}\sum{}x_i}{N-1}+\frac{\sum_{}x^2}{N-1}$$
+$$s_x^2 = \frac{\sum_{}x_i^2}{N-1} - \frac{2\bar{x}\sum{}x_i}{N-1}+\frac{N\bar{x}^2}{N-1}$$
+
+$$s_x^2 = \frac{\sum_{}x_i^2}{N-1} - \frac{2N\bar{x}^2}{N-1}+\frac{N\bar{x}^2}{N-1}$$
+
+$$s_x^2 = \frac{\sum_{}x_i^2}{N-1} - \frac{N\bar{x}^2}{N-1}$$
 
 ### Part B (Gailmard 2.2)
 
