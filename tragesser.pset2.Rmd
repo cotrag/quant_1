@@ -12,6 +12,7 @@ library(foreign)
 library(tidyverse)
 library(modelsummary)
 library(formatR)
+
 knitr::opts_chunk$set(echo = TRUE)
 
 knitr::opts_knit$set(root.dir = "/Users/connortragesser/Documents/Political Science Coursework Readings/Quant 1/Problem Set 2/")
@@ -27,13 +28,15 @@ rm(list = ls())
 
 Show  $s_x^2 = \frac{\sum_{}x_i^2}{N-1} - \frac{N\bar{x}}{N-1}$
 
-$$s_x^2 = \frac{\sum_{}(x_i-\bar{x})^2}{N-1}$$
-$$s_x^2 = \frac{\sum_{}x_i^2}{N-1} - \frac{2\bar{x}\sum{}x_i}{N-1}+\frac{\sum_{}x^2}{N-1}$$
-$$s_x^2 = \frac{\sum_{}x_i^2}{N-1} - \frac{2\bar{x}\sum{}x_i}{N-1}+\frac{N\bar{x}^2}{N-1}$$
+$$s_x^2=\frac{\sum_{}(x_i-\bar{x})^2}{N-1}$$
 
-$$s_x^2 = \frac{\sum_{}x_i^2}{N-1} - \frac{2N\bar{x}^2}{N-1}+\frac{N\bar{x}^2}{N-1}$$
+$$s_x^2=\frac{\sum_{}x_i^2}{N-1} - \frac{2\bar{x}\sum{}x_i}{N-1}+\frac{\sum_{}\bar{x}^2}{N-1}$$
 
-$$s_x^2 = \frac{\sum_{}x_i^2}{N-1} - \frac{N\bar{x}^2}{N-1}$$
+$$s_x^2=\frac{\sum_{}x_i^2}{N-1} - \frac{2\bar{x}\sum{}x_i}{N-1}+\frac{N\bar{x}^2}{N-1}$$
+
+$$s_x^2=\frac{\sum_{}x_i^2}{N-1} - \frac{2N\bar{x}^2}{N-1}+\frac{N\bar{x}^2}{N-1}$$
+
+$$s_x^2=\frac{\sum_{}x_i^2}{N-1} - \frac{N\bar{x}^2}{N-1}$$
 
 ### Part B (Gailmard 2.2)
 
@@ -43,7 +46,24 @@ Given A and B are constant, when A is added and X is multiplied by $\beta$, $$\s
 
 ### Part C (Gailmard 2.3)
 
+expected value, can look it up (hasn't been covered yet), see chapter 4.
+
 ### Part D (Gailmard 2.5)
+
+Known: $b = \frac{rs_y}{s_x}$ and $a = \bar{y} - b\bar{x}$
+
+#### A
+B is multiplied by C and A is multiplied by C
+
+#### B
+B is multiplied by 1/D, A is unchanged
+
+#### C
+B is unchanged, A increases by G
+
+#### D
+B is unchanged, A decreases by H
+
 
 ## Problem 2
 
@@ -58,7 +78,7 @@ fh_data <- read.dta("fh.dta")
 
 ### Part A
 ```{r}
-
+# add IQR and SD
 summary(fh_data$fh_cl)
 summary(fh_data$fh_pr)
 count(fh_data)
@@ -106,13 +126,40 @@ print(test)
 
 ```
 
-The proportion table is printed above. These calculations do not include NAs. 46.5% of countries are "Free" 26.7% of countries are "Partly Free" and 26.7% of countries are "Not Free". I also calculated the percentages when NA values are included in the denominator
+The proportion table is printed above. These calculations do not include NAs. 46.5% of countries are "Free" 26.7% of countries are "Partly Free" and 26.7% of countries are "Not Free". I also calculated the percentages when NA values are included in the denominator.
 
 ## Problem 3
 
 
 ```{r}
 cces_data <- read.dta("cces.dta")
+
+# make a new age variable, based on birthyr and today's date
+cces_data$age <- year(today()) - cces_data$birthyr
+
+# nothing looks out of place, stewart and oreilly are 1-7 as expected 
+summary(cces_data$age)
+summary(cces_data$pid7)
+summary(cces_data$stewart)
+summary(cces_data$oreilly)
+
+graph_hist_func <- function(variable, xaxis) {
+  ggplot(cces_data, aes(x = {{variable}})) + 
+  geom_histogram(fill = "blue", binwidth = .5) +
+  xlab(xaxis) +
+  ylab("Count") +  
+  theme_bw()
+}
+
+graph_hist_func(stewart, xaxis = "Stewart")
+graph_hist_func(oreilly, xaxis = "Oreilly")
+graph_hist_func(pid7, xaxis = "Party ID")
+
+ggplot(cces_data, aes(x = age)) + 
+  geom_density(color = "blue") +
+  xlab("Age") + 
+  theme_bw()
+
 
 liner_model = lm(stewart ~ pid7, data = cces_data)
 modelsummary(liner_model, coef_rename = c("pid7" = "Party Identification"), stars = TRUE)
