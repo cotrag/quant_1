@@ -48,6 +48,25 @@ Given A and B are constant, when A is added and X is multiplied by $\beta$, $$\s
 
 expected value, can look it up (hasn't been covered yet), see chapter 4.
 
+Show $\sigma^2_{x+y}$ in terms of $\sigma^2_{x}$, $\sigma^2_{y}$ and $cov(x,y)$
+
+Known from book: $var(x) = E[(x-E(x))^2]$ and the same is true when you replace $y$ for $x$ and $x+y$ so that 
+
+$$(1) var(x+y) = E[((x+y)-E(x+y))^2]$$
+Also known from book: 
+$cov(x,y)$ can be written as $$(2) cov(x,y) = E[(y-E(y))(x-E(x))]$$
+
+
+Rearranging $(1)$ to get like terms, we get 
+$$var(x+y) = E[((x-E(x))+(y-E(y)))^2]$$
+Expanding the square, we get 
+
+$$var(x+y) = E[(x-E(x))^2 + 2((x-E(x))(y-E(y))) + (y-E(y))^2 ]$$
+Replacing the component parts 1 and 3 from the equation above with $(1)$ and replacing the 2nd component part with $(2)$, noting that $xy = yx$,we get 
+
+$$var(x+y) = var(x) + 2cov(x,y) + var(y)$$
+
+
 ### Part D (Gailmard 2.5)
 
 Known: $b = \frac{rs_y}{s_x}$ and $a = \bar{y} - b\bar{x}$
