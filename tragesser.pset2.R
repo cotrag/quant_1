@@ -20,7 +20,11 @@ fh_data <- read.dta("fh.dta")
 
 # add IQR and SD
 summary(fh_data$fh_cl)
+IQR(fh_data$fh_cl, na.rm = TRUE)
+sd(fh_data$fh_cl, na.rm = TRUE)
 summary(fh_data$fh_pr)
+IQR(fh_data$fh_pr, na.rm = TRUE)
+sd(fh_data$fh_pr, na.rm = TRUE)
 count(fh_data)
 non_na_counter <- function(x){
   z <- fh_data %>% 
