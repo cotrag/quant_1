@@ -1,0 +1,129 @@
+---
+title: "Problem Set 3"
+author: "Connor Tragesser"
+date: "2023-09-10"
+output: pdf_document
+---
+
+Begin by preparing the environment. The working directory needs to be set where your data will be available (meaning, you will need to change this for your computer), and the packages that are necessary for this exercise need to be loaded from the library (this assumes they are already installed). I'm also clearing the environment before beginning.
+
+```{r setup}
+library(foreign)
+library(tidyverse)
+library(modelsummary)
+library(formatR)
+
+knitr::opts_chunk$set(echo = TRUE)
+
+knitr::opts_knit$set(root.dir = "/Users/connortragesser/Documents/Political Science Coursework Readings/Quant 1/Problem Set 3/")
+
+getwd()
+rm(list = ls()) 
+
+```
+
+## Problem 1
+### Part A
+The answer is "1. 35/36".
+
+### Part B
+The answer is "3. 53". The question tells us being left handed is independent of political preference, so we would still expect that a left handed person has a .53 chance of voting for Obama. Thought of mathematically, given the formula from the notes, fpr independence, $P(B|A) = P(B)$ in this case, $P(vote for obama | left handed) = P(vote for obama)$.
+
+## Problem 2
+### Part A
+```{r}
+124/164
+```
+There is a 75.6% chance the country has a per capita GDP below $5000.
+
+### Part B
+```{r}
+(64+29)/164
+```
+There is a 56.7% chance the country has a proportional representation system.
+
+### Part C
+$P(PR system|GDP above 5000) = .725$
+
+```{r}
+29/40
+```
+There is a 72.5% chance the country has a proportional representation system given that it has a Per Capita GDP > $5000.
+
+### Part C
+$P(PR system|GDP below 5000) = .516$
+
+```{r}
+64/124
+```
+There is a 51.6% chance the country has a proportional representation system given that it has a Per Capita GDP < $5000.
+
+### Part D
+$P(GDP below 5000|PR system) = .387$ given: $P(B|A) = \frac{P(B)\times P(A|B)}{P(A)}$ and we have that $P(B) = .567$, $P(A) = .756$, and $P(A|B) = .516$.
+
+```{r}
+(.567*.516)/.756
+```
+
+### Part E
+Having a PCGDP above \$5000 is not independent of using a PR system. If two events are independent, $P(B|A) = P(B)$. This is not the case, given that, in our scenario, $P(GDP above 5000) = 1 - .756 =.244$, while $P(GDP above 5000|PR system) = \frac{P(GDP above 5000)\times P(PR system|GDP above 5000)}{P(PR system)} = .312$. These values are unequal.
+```{r}
+1-.756
+
+(.244*.725)/.567
+
+```
+
+
+## Problem 3
+
+## Problem 4
+### Part A
+We cannot know based on the given information, because we don't know the total distribution of men and women.
+### Part B
+We cannot know based on the given information, because we don't know the total distribution of men and women.
+### Part C
+This is true.
+### Part D
+This is true.
+### Part E
+This is true.
+
+## Problem 5
+
+```{r}
+
+qog <- read.dta("QoG_2010.dta")
+head(qog)
+
+```
+
+
+### Part A
+```{r}
+boxplot(qog$undp_gdp, xlab = "per capita GDP ($)", ylab = "Amount")
+```
+
+This boxplot conforms with my expectations, wherein a large group of countries are bunched in the lower end, and there are a few outliers at the very high end of the distribution. I would expect the mean to be grater than the median, because the outliers on the high end would push the mean up, but the median would remain unaffected. 
+
+### Part B
+```{r}
+ggplot(qog, aes(x=fh_status, y=undp_gini)) + 
+    geom_boxplot() + 
+  xlab("Freedom Index") +
+  ylab("Gini Coefficient") +
+  theme_bw()
+```
+
+This graph shows that, among the three levels of freedom, "Partly Free" has the highest median Gini coefficient, followed by "Not Free" and then "Free". The IQR for the levels are relatively similar, with the "Not Free" one being the closest together. The "Free" category seems to have the widest range of Gini coefficients. Substantively, because Gini coefficients rise as the inequality rises, this indicates that "Free" countries, as defined here, have the lower median amount of inequality than the othertwo, and "Partly Free" countries tend to be the most unequal, both in terms of median and higher end of the IQR. 
+
+### Part 3
+```{r}
+ggplot(qog, aes(x =undp_gdp, y = wdi_gris)) +
+  geom_point() +
+  theme_bw() +
+  xlab("GDP Per Capita") +
+  ylab("% Girls to Boys Enrolled in Schools")
+```
+This relationship is difficult to parse because of the outliers in GDP per capita. However, there seems to be a positive relationship between these two variables. No relatively rich countries have very low rates of girls in schools, and past a relatively low level of per capita GDP, there is generally parity between girls and boys in school enrollment. 
+
