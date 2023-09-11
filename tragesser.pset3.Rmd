@@ -27,7 +27,7 @@ rm(list = ls())
 The answer is "1. 35/36".
 
 ### Part B
-The answer is "3. 53". The question tells us being left handed is independent of political preference, so we would still expect that a left handed person has a .53 chance of voting for Obama. Thought of mathematically, given the formula from the notes, fpr independence, $P(B|A) = P(B)$ in this case, $P(vote for obama | left handed) = P(vote for obama)$.
+The answer is "3. 53". The question tells us being left handed is independent of political preference, so we would still expect that a left handed person has a .53 chance of voting for Obama. Thought of mathematically, given the formula from the notes, for independence, $P(B|A) = P(B)$ in this case, $P(vote\;for\;obama |left\;handed) = P(vote\;for\;obama)$.
 
 ## Problem 2
 ### Part A
@@ -43,30 +43,22 @@ There is a 75.6% chance the country has a per capita GDP below $5000.
 There is a 56.7% chance the country has a proportional representation system.
 
 ### Part C
-$P(PR system|GDP above 5000) = .725$
+$P(PR\;system|GDP\;above\;5000) = .725$
 
 ```{r}
 29/40
 ```
 There is a 72.5% chance the country has a proportional representation system given that it has a Per Capita GDP > $5000.
 
-### Part C
-$P(PR system|GDP below 5000) = .516$
-
-```{r}
-64/124
-```
-There is a 51.6% chance the country has a proportional representation system given that it has a Per Capita GDP < $5000.
-
 ### Part D
-$P(GDP below 5000|PR system) = .387$ given: $P(B|A) = \frac{P(B)\times P(A|B)}{P(A)}$ and we have that $P(B) = .567$, $P(A) = .756$, and $P(A|B) = .516$.
-
 ```{r}
-(.567*.516)/.756
+64/(64+29)
 ```
+There is a 68.8% chance that the country has a pcGDP below $5000 given that it has a PR system.
+
 
 ### Part E
-Having a PCGDP above \$5000 is not independent of using a PR system. If two events are independent, $P(B|A) = P(B)$. This is not the case, given that, in our scenario, $P(GDP above 5000) = 1 - .756 =.244$, while $P(GDP above 5000|PR system) = \frac{P(GDP above 5000)\times P(PR system|GDP above 5000)}{P(PR system)} = .312$. These values are unequal.
+Having a PCGDP above \$5000 is not independent of using a PR system. If two events are independent, $P(B|A) = P(B)$. This is not the case, given that, in our scenario, $P(GDP\;above\;5000) = 1 - .756 =.244$, while $P(GDP\;above\;5000|PR\;system) = \frac{P(GDP\;above\;5000)\times P(PR\;system|GDP\;above\;5000)}{P(PR\;system)} = .312$. These values are unequal.
 ```{r}
 1-.756
 
@@ -76,16 +68,22 @@ Having a PCGDP above \$5000 is not independent of using a PR system. If two even
 
 
 ## Problem 3
+?? 81.25?
 
 ## Problem 4
+
 ### Part A
 We cannot know based on the given information, because we don't know the total distribution of men and women.
+
 ### Part B
-We cannot know based on the given information, because we don't know the total distribution of men and women.
+This is true.
+
 ### Part C
 This is true.
+
 ### Part D
 This is true.
+
 ### Part E
 This is true.
 
@@ -119,11 +117,11 @@ This graph shows that, among the three levels of freedom, "Partly Free" has the 
 
 ### Part 3
 ```{r}
-ggplot(qog, aes(x =undp_gdp, y = wdi_gris)) +
+ggplot(qog, aes(x = undp_gdp, y = wdi_gris)) +
   geom_point() +
   theme_bw() +
   xlab("GDP Per Capita") +
   ylab("% Girls to Boys Enrolled in Schools")
 ```
-This relationship is difficult to parse because of the outliers in GDP per capita. However, there seems to be a positive relationship between these two variables. No relatively rich countries have very low rates of girls in schools, and past a relatively low level of per capita GDP, there is generally parity between girls and boys in school enrollment. 
+This relationship is difficult to parse because of the outliers in GDP per capita. However, there seems to be a positive relationship between these two variables. No relatively rich countries have very low rates of girls in schools, and past a relatively low level of per capita GDP, there is generally parity between girls and boys in school enrollment. This relationship may come about because high education in general may lead to a high per capita GDP, and countries with higher rates of girls in school probably have a higher education rate (it is unlikely that many countries have a noticeably different number of girls and boys). It could also be the case that as countries grow in economic sophistication, thus increasing per captia GDP, they may develop more liberal social values as a result of market forces, making the populous more likely to support education for girls.
 
