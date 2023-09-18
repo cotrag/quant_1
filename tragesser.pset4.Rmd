@@ -1,0 +1,157 @@
+---
+title: "Problem Set 4"
+author: "Connor Tragesser"
+date: "2023-09-17"
+output: pdf_document
+---
+
+Begin by preparing the environment. The working directory needs to be set where your data will be available (meaning, you will need to change this for your computer), and the packages that are necessary for this exercise need to be loaded from the library (this assumes they are already installed). I'm also clearing the environment before beginning.
+
+
+```{r setup}
+library(foreign)
+library(tidyverse)
+library(modelsummary)
+library(formatR)
+knitr::opts_chunk$set(tidy.opts = list(width.cutoff = 60), tidy = TRUE)
+knitr::opts_chunk$set(echo = TRUE)
+
+knitr::opts_knit$set(root.dir = "/Users/connortragesser/Documents/Political Science Coursework Readings/Quant 1/Problem Set 4/")
+
+getwd()
+rm(list = ls()) 
+
+```
+
+
+## Problem 1
+
+### Part A
+The relationship between the CDF (F(x)) and the PDF (f(x)) is shown below
+
+$$F(X) =\int_{-\infty}^{x} f(x) \;dx$$. 
+
+To calculate F(X) in this case, knowing the range restriction is $x \geq 0$, we get 
+
+$$F(X) =\int_{0}^{x} \lambda e^{-\lambda x} \;dx$$
+Which proceeds as follows 
+
+Let $u = -\lambda x$
+
+$$du = -\lambda \;dx$$
+
+Therefore:
+
+$$F(x) = -\int_{0}^{x}e^udu$$
+
+$$F(x) = -\int_{0}^{x}e^udu$$
+$$F(x) = -(e^{-\lambda x})$$
+Evaluated at $x = 0$ to $x = x$, which is 
+
+$$F(x) = - (e^{-\lambda x} - e^{\lambda 0}) $$
+$$F(x) = - (e^{-\lambda x} - 1) $$
+$$F(x) = -e^{-\lambda x} + 1 $$
+
+### Part B
+
+#### Section A
+
+
+```{r}
+z = 0
+for (x in 10:20) {
+  r = (.75^(20-x))*(.25^x)*(choose(20,x))
+  z = z + r
+}
+
+print(z)
+
+```
+
+
+#### Section B
+$(1-.25)^{20-10}.25^{10} {20 \choose 10}$
+```{r}
+(.75^10)*(.25^10)*(choose(20,10))
+```
+The probability that the student guesses 10 questions correctly is .992%.
+
+#### Section C
+
+
+## Problem 2
+
+This question incorrectly assumes that admission to a given school is independent of admission to another school. Conceptually, if a student is admitted to the 15th ranked school in the country, it is safe to assume that they are far more likely to get into the 14th ranked school in the country than the average applicant to the 14th ranked school. The logic continues to all of the other schools. Mathematically, the student assumes that $P(A_i)$ for any given school $i$ is equal to $P(A_i|B_j)$ where $j$ is any school not $i$. This is unlikely. Instead, it is safe to assume $P(A_i|B_j) > P(A_i)$.
+
+## Problem 3
+
+
+## Problem 4
+
+```{r}
+pnorm(1.8)
+
+pnorm(2) - pnorm(-1.5)
+
+1 - pnorm(3.00)
+
+pnorm(-2.2)
+
+pnorm(1.64) - pnorm(-1.64)
+
+```
+
+## Problem 5
+```{r}
+
+empty <- matrix(nrow = 10000, ncol = 1)
+
+xdf <- data.frame(empty)
+ydf <- data.frame(empty)
+
+
+xdf$rand <- rnorm(10000, mean = 4, sd = 3)
+ydf$rand <- rnorm(10000, mean = 6, sd = 1.5)
+
+# ggplot(xdf, aes(x = rand)) +
+#   geom_histogram() + 
+#   theme_bw() +
+#   xlab("Value") + 
+#   ylab("Count") 
+# 
+# ggplot(ydf, aes(x = rand)) +
+#   geom_histogram() + 
+#   theme_bw() +
+#   xlab("Value") + 
+#   ylab("Count") +
+#   ggtitle("HERE")
+
+hist_maker <- function(dataframe, title) {
+  ggplot(dataframe, aes(x = rand)) +
+    geom_histogram(fill = "red") +
+    geom_freqpoly(color = "blue") +
+    theme_bw() +
+    xlab("Value") + 
+    ylab("Count") + 
+    ggtitle(title)
+}
+
+hist_maker2 <- function(dataframe, title) {
+  ggplot(dataframe, aes(x = rand)) +
+    geom_histogram(fill = "red") +
+    geom_density(color = "blue") +
+    theme_bw() +
+    xlab("Value") + 
+    ylab("Count") + 
+    ggtitle(title) +
+    scale_y_continuous(sec.axis = sec_axis(~./30000))
+}
+
+hist_maker(xdf, "Graph for x Distribution")
+hist_maker(ydf, "Graph for Y Distribution")
+
+
+```
+
+
+
