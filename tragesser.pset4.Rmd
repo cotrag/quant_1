@@ -27,6 +27,7 @@ rm(list = ls())
 ## Problem 1
 
 ### Part A
+DO WE WANT TO TAKE THIS TO INFINITY? 
 The relationship between the CDF (F(x)) and the PDF (f(x)) is shown below
 
 $$F(X) =\int_{-\infty}^{x} f(x) \;dx$$. 
@@ -56,6 +57,7 @@ $$F(x) = -e^{-\lambda x} + 1 $$
 
 #### Section A
 
+The probability that the student guesses at least 10 questions correctly is 1.38%.
 
 ```{r}
 z = 0
@@ -66,6 +68,8 @@ for (x in 10:20) {
 
 print(z)
 
+rm(z)
+
 ```
 
 
@@ -74,12 +78,47 @@ $(1-.25)^{20-10}.25^{10} {20 \choose 10}$
 ```{r}
 (.75^10)*(.25^10)*(choose(20,10))
 ```
-The probability that the student guesses 10 questions correctly is .992%.
+The probability that the student guesses exactly 10 questions correctly is .992%.
 
 #### Section C
 
+```{r}
+
+(.25^10)*(.75^10)
+
+```
+
+#### Section D
+
+The most likely number of correct answers is 5. 
+
+```{r}
+z = 0
+draw = 0
+for (x in 0:20) {
+  r = (.75^(20-x))*(.25^x)*(choose(20,x))
+  if (r > z) {
+    z = r
+    draw = x
+  }
+}
+
+print(z)
+print(draw)
+
+```
+
+#### Section E
+We should not infer the student is guessing. This only gives us one route to the student answering 5 questions correctly, there are many others. 
 
 ## Problem 2
+
+```{r}
+
+# run claim 1 using n = 12, k = 12, and p = 0.2, and claim 2 using .2^12 * 300 mill
+
+```
+
 
 This question incorrectly assumes that admission to a given school is independent of admission to another school. Conceptually, if a student is admitted to the 15th ranked school in the country, it is safe to assume that they are far more likely to get into the 14th ranked school in the country than the average applicant to the 14th ranked school. The logic continues to all of the other schools. Mathematically, the student assumes that $P(A_i)$ for any given school $i$ is equal to $P(A_i|B_j)$ where $j$ is any school not $i$. This is unlikely. Instead, it is safe to assume $P(A_i|B_j) > P(A_i)$.
 
@@ -88,14 +127,50 @@ This question incorrectly assumes that admission to a given school is independen
 
 ## Problem 4
 
+### Part 1
+
+The probability that Z < 1.8 is .964.
+
 ```{r}
 pnorm(1.8)
 
+```
+
+
+### Part 2
+
+The probability that Z is in between -1.5 and 2 is .910.
+
+```{r}
 pnorm(2) - pnorm(-1.5)
 
+
+```
+
+### Part 3
+
+The probability that Z is greater than 3.00 is .00135.
+
+```{r}
 1 - pnorm(3.00)
 
+```
+
+### Part 4
+
+The probability that Z is less than -2.2 is .0139.
+
+```{r}
+
 pnorm(-2.2)
+
+```
+
+### Part 5
+
+The probability that Z is between -1.64 and 1.64 is .899.
+
+```{r}
 
 pnorm(1.64) - pnorm(-1.64)
 
@@ -103,6 +178,8 @@ pnorm(1.64) - pnorm(-1.64)
 
 ## Problem 5
 ```{r}
+
+set.seed(42078)
 
 empty <- matrix(nrow = 10000, ncol = 1)
 
@@ -113,44 +190,22 @@ ydf <- data.frame(empty)
 xdf$rand <- rnorm(10000, mean = 4, sd = 3)
 ydf$rand <- rnorm(10000, mean = 6, sd = 1.5)
 
-# ggplot(xdf, aes(x = rand)) +
-#   geom_histogram() + 
-#   theme_bw() +
-#   xlab("Value") + 
-#   ylab("Count") 
-# 
-# ggplot(ydf, aes(x = rand)) +
-#   geom_histogram() + 
-#   theme_bw() +
-#   xlab("Value") + 
-#   ylab("Count") +
-#   ggtitle("HERE")
 
 hist_maker <- function(dataframe, title) {
   ggplot(dataframe, aes(x = rand)) +
-    geom_histogram(fill = "red") +
-    geom_freqpoly(color = "blue") +
+    geom_histogram(aes(y = after_stat(density)), fill = "burlywood2", alpha = 0.8) +
+    geom_density(color = "brown3") +
     theme_bw() +
     xlab("Value") + 
-    ylab("Count") + 
+    ylab("Density") + 
     ggtitle(title)
 }
 
-hist_maker2 <- function(dataframe, title) {
-  ggplot(dataframe, aes(x = rand)) +
-    geom_histogram(fill = "red") +
-    geom_density(color = "blue") +
-    theme_bw() +
-    xlab("Value") + 
-    ylab("Count") + 
-    ggtitle(title) +
-    scale_y_continuous(sec.axis = sec_axis(~./30000))
-}
-
-hist_maker(xdf, "Graph for x Distribution")
+hist_maker(xdf, "Graph for X Distribution")
 hist_maker(ydf, "Graph for Y Distribution")
 
-
+cat("The quantile value for the X distribution is", quantile(xdf$rand, .95))
+cat("The quantile value for the Y distribution is", quantile(ydf$rand, .95))
 ```
 
 
