@@ -5,6 +5,8 @@ date: "2023-09-17"
 output: pdf_document
 ---
 
+Discussed with Abdullah Jaber, Kristen Adams, Edward Howe, Jinglong Guo, Jae Chang, Jae Eun Jun, Soyun Chang, Ryo Sawayma, and Alice Moon
+
 Begin by preparing the environment. The working directory needs to be set where your data will be available (meaning, you will need to change this for your computer), and the packages that are necessary for this exercise need to be loaded from the library (this assumes they are already installed). I'm also clearing the environment before beginning.
 
 
@@ -27,7 +29,6 @@ rm(list = ls())
 ## Problem 1
 
 ### Part A
-DO WE WANT TO TAKE THIS TO INFINITY? 
 The relationship between the CDF (F(x)) and the PDF (f(x)) is shown below
 
 $$F(X) =\int_{-\infty}^{x} f(x) \;dx$$. 
@@ -113,17 +114,81 @@ We should not infer the student is guessing. This only gives us one route to the
 
 ## Problem 2
 
-```{r}
-
-# run claim 1 using n = 12, k = 12, and p = 0.2, and claim 2 using .2^12 * 300 mill
-
-```
-
-
 This question incorrectly assumes that admission to a given school is independent of admission to another school. Conceptually, if a student is admitted to the 15th ranked school in the country, it is safe to assume that they are far more likely to get into the 14th ranked school in the country than the average applicant to the 14th ranked school. The logic continues to all of the other schools. Mathematically, the student assumes that $P(A_i)$ for any given school $i$ is equal to $P(A_i|B_j)$ where $j$ is any school not $i$. This is unlikely. Instead, it is safe to assume $P(A_i|B_j) > P(A_i)$.
 
 ## Problem 3
 
+### Step 1
+
+Showing $f_X(x) = e^{-x}$
+
+$$f_X(x) = \int_{0}^{\infty}xe^{-x(y+1)}$$
+$$f_X(x) = x\int_{0}^{\infty}e^{-x(y+1)}$$
+Let $u = -x(y+1)$
+
+$$\frac{du}{dy} = -x$$
+$$dy = \frac{-1}{x}du$$
+Therefore, 
+
+$$f_X(x) = x\frac{-1}{x}\int_{0}^{\infty}e^udu$$
+
+$$f_X(x) = -\int_{0}^{\infty}e^udu$$
+
+$$f_X(x) = -e^{-x(y+1)}|y = (0,\infty)$$
+
+$$f_X(x) = -e^{-x(\infty+1)} + e^{-x(0+1)}$$
+$$f_X(x) = 0 + e^{-x}$$
+$$f_X(x) = e^{-x}$$
+
+Now, we must show $F_Y(y) = \frac{1}{(y+1)2}$
+
+$$F_Y(y) = \int_{0}^{\infty}xe^{-x(y+1)}$$
+Solve using integration by parts first: $\int u \; dv = \int v \; du$
+
+$$u = x$$
+$$du = dx$$
+$$dv = e^{-x(y+1)} \;dx$$
+$$v = \int dv$$
+$$v = \int e^{-x(y+1)} \;dx$$
+$$v = \frac{-1}{y+1}e^{-x(y+1)}$$
+So far, we have the elements of the integration by parts set up like:
+
+$$F_Y(y) = x\frac{-1}{y+1}e^{-x(y+1)} - \int_{0}^{\infty}\frac{-1}{y+1}e^{-x(y+1)}dx$$
+Now we need to focus on the integral after the negative sign:
+
+$$\int_{0}^{\infty}\frac{-1}{y+1}e^{-x(y+1)}dx$$
+Let $u = -x(y+1)$
+$$\frac{du}{dx} = -y-1$$
+$$dx = \frac{du}{-y-1}$$
+Plugging into the integral:
+
+$$\int_{0}^{\infty}\frac{-1}{y+1}e^{u}\frac{1}{-y-1}du$$
+$$\frac{1}{(y+1)^2}\int_{0}^{\infty}e^{u}du$$
+$$\frac{1}{(y+1)^2}(e^u|x = (0, \infty))$$
+
+$$\frac{1}{(y+1)^2}(e^{-x(y+1)}|x = (0, \infty))$$
+
+$$\frac{1}{(y+1)^2}e^{-\infty(y+1)} - e^{0(y+1)}$$
+$$\frac{1}{(y+1)^2}(0-1)$$
+$$-\frac{1}{(y+1)^2}$$
+
+Plugging into the intergration by parts equation:
+
+$$F_Y(y) = x\frac{-1}{y+1}e^{-x(y+1)}|x = (0,\infty) + \frac{1}{(y+1)^2}$$
+
+$$F_Y(y) = lim_x\rightarrow \infty (x\frac{-1}{y+1}e^{-x(y+1)}) + 0(\frac{-1}{y+1}e^{-0(y+1)}) + \frac{1}{(y+1)^2}$$
+
+$$F_Y(y) = 0 + 0 + \frac{1}{(y+1)^2}$$
+
+$$F_Y(y) = \frac{1}{(y+1)^2}$$
+
+Now need to find the conditional distribution functions
+
+$$f_{X,Y}(x,y) = xe^{-x(y+1)}$$
+$$f_{X|Y = y}(x) = \frac{f_{X,Y}(x,y)}{f_{Y}(y)} = \frac{xe^{-x(y+1)}}{\frac{1}{(y+1)^2}} = xe^{-x(y+1)}(y+1)^2$$
+$$f_{Y|X = x}(y) = \frac{f_{X,Y}(x,y)}{f_{X}(x)} = \frac{xe^{-x(y+1)}}{e^{-x}} = xe^{-x(y+1)}(y+1)^2$$
+
+If the distributions were independent, $P(A \cap B) = P(A)*P(B)$, in this case $f_{X,Y}(x,y) = f_X(x) * f_Y(y)$. This is clearly not the case, as shown by the equations above. The distributions are not independent.
 
 ## Problem 4
 
@@ -133,7 +198,6 @@ The probability that Z < 1.8 is .964.
 
 ```{r}
 pnorm(1.8)
-
 ```
 
 
@@ -143,8 +207,6 @@ The probability that Z is in between -1.5 and 2 is .910.
 
 ```{r}
 pnorm(2) - pnorm(-1.5)
-
-
 ```
 
 ### Part 3
@@ -153,7 +215,6 @@ The probability that Z is greater than 3.00 is .00135.
 
 ```{r}
 1 - pnorm(3.00)
-
 ```
 
 ### Part 4
@@ -161,9 +222,7 @@ The probability that Z is greater than 3.00 is .00135.
 The probability that Z is less than -2.2 is .0139.
 
 ```{r}
-
 pnorm(-2.2)
-
 ```
 
 ### Part 5
@@ -171,9 +230,7 @@ pnorm(-2.2)
 The probability that Z is between -1.64 and 1.64 is .899.
 
 ```{r}
-
 pnorm(1.64) - pnorm(-1.64)
-
 ```
 
 ## Problem 5
