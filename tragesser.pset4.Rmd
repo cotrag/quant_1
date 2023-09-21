@@ -85,9 +85,11 @@ The probability that the student guesses exactly 10 questions correctly is .992%
 
 ```{r}
 
-(.25^10)*(.75^10)
+format(100*((.25^10)*(.75^10)), scientific = FALSE)
 
 ```
+
+The probability that the student gets the first 10 questions right and then the next 10 questions wrong is .00000537% 
 
 #### Section D
 
