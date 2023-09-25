@@ -1,0 +1,237 @@
+---
+title: "Problem Set 5"
+author: "Connor Tragesser"
+date: "2023-09-24"
+output: pdf_document
+---
+
+Begin by preparing the environment. The working directory needs to be set where your data will be available (meaning, you will need to change this for your computer), and the packages that are necessary for this exercise need to be loaded from the library (this assumes they are already installed). I'm also clearing the environment before beginning.
+
+```{r setup}
+library(foreign)
+library(tidyverse)
+library(modelsummary)
+library(formatR)
+knitr::opts_chunk$set(tidy.opts = list(width.cutoff = 60), tidy = TRUE)
+knitr::opts_chunk$set(echo = TRUE)
+
+knitr::opts_knit$set(root.dir = "/Users/connortragesser/Documents/Political Science Coursework Readings/Quant 1/Problem Set 5/")
+
+getwd()
+rm(list = ls()) 
+
+```
+
+
+## Problem 1
+
+### Part A (Gailmard 5.3)
+
+To show $Var(X) = E(X^2) - (E(X)^2)$, we must proceed by knowing the definition of $Var(X) = E(X-E(X))^2$:
+
+$$Var(X) = E(X - E(X))^2$$
+Expand the square:
+$$Var(X) = E((X - E(X))(X - E(X)))$$
+Multiply through:
+$$Var(X) = E(X^2 - 2XE(X) + (E(X))^2)$$
+Distribute the expectation linerally:
+$$Var(X) = E(X^2) - 2(E(X)E(X)) + (E(X))^2 $$
+Simplify:
+$$Var(X) = E(X^2) - 2(E(X))^2 + (E(X))^2 $$
+$$Var(X) = E(X^2) - (E(X))^2 $$
+
+### Part B (Gailmard 5.4)
+
+To show $Var(aX) = a^2Var(X)$, it must be noted that, from the book and the proof above, $Var(X) = E(X^2) - (E(X))^2$, which can be replaced with $aX$ as:
+
+$$Var(aX) = E((aX)^2) - (E(aX))^2$$
+Which, can be rewritten as 
+
+$$Var(aX) = E(a^2X^2) - (E(aX))(E(aX))$$
+Which, given a is a constant, can be written as 
+
+$$Var(aX) = a^2E(X^2) - a^2(E(X)^2)$$
+Which, factoring out the a^2 and recognizing the definition of the variance of X, gets us 
+
+$$Var(aX) = a^2Var(X)$$
+
+### Part C (Gailmard 5.5)
+
+To show $Cov(X,Y) = E(XY) - E(X)E(Y)$, we must proceed by recognizing the definition of covariance as $Cov(X,Y) = E((Y-E(Y))(X-E(X)))$, which can be multiplied out into 
+
+$$Cov(X,Y) = E(YX - YE(X) - XE(Y) + E(Y)E(X))$$
+Which, when distributing the expectation, gets us 
+
+$$Cov(X,Y) = E(YX) - E(Y)E(X) - E(X)E(Y) + E(Y)E(X)$$
+
+Which gets us, using arithmetic (note, the order within the expectation and of multiplication does not matter, i.e. $xy = yx$ and $e(xy) = e(yx))$, 
+$$Cov(X,Y) = E(YX) - E(Y)E(X)$$
+
+### Part D (Gailmard 5.6)
+
+To show $Var(X+Y) = Var(X) + Var(Y) + 2Cov(X,Y)$ the following principles must be noted:
+
+$$(1)\; E(X+Y) = E(X) + E(Y)$$
+$$(2)\; Var(X) = E(X^2) - (E(X))^2$$
+$$(3)\; Cov(X,Y) = E(XY)-E(X)E(Y)$$
+
+Begin by writing $(2)$ with the function given:
+
+$$Var(X+Y) = E((XY)^2) - (E(X+Y))^2$$
+Which can be rewritten as 
+$$Var(X+Y) = E(X^2 + 2XY + y^2) - (E(X)+E(Y))^2$$
+Which can be rewritten as 
+$$Var(X+Y) = E(X^2 + 2XY + y^2) - (E(X)^2 + 2E(X)E(Y) + E(Y)^2)$$
+
+Distributing the Expectation and the negative, we get 
+
+$$Var(X+Y) = E(X^2) + 2E(XY) + E(Y^2) - E(X)^2 - 2E(X)E(Y) - E(Y)^2$$
+Rearranging the terms gets us to 
+
+$$Var(X+Y) = E(X^2) - E(X)^2 + E(Y^2) - E(Y)^2 + 2E(XY) - 2E(X)E(Y)$$
+
+Which, using $(2)$ and $(3)$ leaves us with
+
+$$Var(X+Y) = Var(X) + Var(Y) + 2Cov(X,Y)$$
+
+### Part E (Gailmard 5.10)
+
+## Question 2
+
+To get the estimate, we need to understand that $E(X) = \int xf(X)\;dx$
+
+$$E(X) = \int_{0}^{1}x(ax^{a-1})\; dx$$
+Which can be rewritten as 
+$$E(X) = a\int_{0}^{1}x(x^{a-1})\; dx$$
+$$E(X) = a\int_{0}^{1}x^{a-1+1}\; dx$$
+$$E(X) = a\int_{0}^{1}x^{a}\; dx$$
+$$E(X) = \frac{ax^{a+1}}{a+1}|_0^1$$
+Replacing X with 0 and 1 and evaluating, we get 
+$$E(X) = \frac{a1^{a+1}}{a+1} - \frac{0}{a+1}$$
+$$E(X) = \frac{a}{a+1}$$
+
+Variance, as shown in the previous question, can be defined as $Var(X) = E(X^2) - (E(X))^2$
+
+We begin by solving for $E(X^2)$ using the same process as previously 
+
+$$E(X^2) = \int x^2f(X)\;dx$$
+
+$$E(X^2) = \int_{0}^{1}x^2(ax^{a-1})\; dx$$
+
+$$E(X^2) = a\int_{0}^{1}x^2(x^{a-1})\; dx$$
+
+$$E(X^2) = a\int_{0}^{1}(x^{a-1+2})\; dx$$
+
+$$E(X^2) = a\int_{0}^{1}(x^{a+1})\; dx$$
+$$E(X^2) = a(\frac{x^{a+2}}{a+2})|_0^1$$
+
+$$E(X^2) = (\frac{ax^{a+2}}{a+2})|_0^1$$
+
+$$E(X^2) = (\frac{a1^{a+2}}{a+2}) - (\frac{a0^{a+2}}{a+2})$$
+$$E(X^2) = \frac{a}{a+2}$$
+
+Plugging into the variance definition, we get: 
+
+$$Var(X) = \frac{a}{a+2} - (\frac{a}{a+1})^2$$
+
+Which can be rewritten as 
+
+$$Var(X) = \frac{a}{a+2} - \frac{a^2}{a^2+2a+1}$$
+
+
+## Question 3 
+
+Download and merge the datasets, and calculate summary statistics 
+
+```{r}
+
+ace <- read.dta("acemoglu.dta")
+head(ace)
+development <- read.dta("development.dta")
+head(development)
+
+
+# seems like we need to merge by name + year, which seems to uniquely identify the rows 
+
+# lets make sure we have unique obs in the var we're interested in: 
+
+ace$counter <- 1
+
+ace2 <- ace %>% 
+  group_by(ccodealp_year) %>% 
+  mutate(num = sum(counter))
+
+ace_examine <- ace2 %>% 
+  filter(num != 1)
+head(ace_examine)
+
+# clear coding issue with ccodealp_year (looks like lots of instances where they forgot to make the year 12 instead of 11) , going to try cname_year instead 
+
+ace3 <- ace %>% 
+  group_by(cname_year) %>% 
+  mutate(num = sum(counter))
+
+ace_examine2 <- ace3 %>% 
+  filter(num != 1)
+head(ace_examine2)
+
+# cname_year is unique for acemoglu, ensure it is for development
+
+development$counter <- 1
+
+development2 <- development %>% 
+  group_by(cname_year) %>% 
+  mutate(num = sum(counter))
+
+development_examine <- development2 %>% 
+  filter(num != 1)
+head(development_examine)
+
+# cname_year is unique for development, remove datasets no longer needed 
+
+rm(ace_examine, ace_examine2, ace2, ace3, development2, development_examine)
+
+# clean up datasets of variables that will be repeats between the two datasets (basically, further details that are captured by cname_year that aren't actually needed any more)
+
+ace <- ace %>% 
+  select(c(cname_year, ajr_settmort))
+
+development <- development %>% 
+  select(c(cname_year, icrg_qog, wdi_gdpc))
+
+merged_ace_development <- full_join(ace, development, by = "cname_year")
+
+head(merged_ace_development)
+
+summary(merged_ace_development$ajr_settmort)
+summary(merged_ace_development$icrg_qog)
+summary(merged_ace_development$wdi_gdpc)
+
+
+ggplot(merged_ace_development, aes(x = log(wdi_gdpc), y = icrg_qog)) + 
+  geom_point() +
+  geom_smooth(method = lm) +
+  theme_bw() +
+  xlab("Log GDP Per Capita (PPP)") +
+  ylab("Quality of Government")
+
+
+ggplot(merged_ace_development, aes(y = log(wdi_gdpc), x = ajr_settmort)) + 
+  geom_point() +
+  geom_smooth(method = lm) +
+  theme_bw() +
+  ylab("Log GDP Per Capita (PPP)") +
+  xlab("Settler Mortality")
+
+ggplot(merged_ace_development, aes(x = ajr_settmort, y = icrg_qog)) + 
+  geom_point() +
+  geom_smooth(method = lm) +
+  theme_bw() +
+  xlab("Settler Mortality") +
+  ylab("Quality of Government")
+
+
+```
+
+
+
