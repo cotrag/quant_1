@@ -96,6 +96,30 @@ $$Var(X+Y) = Var(X) + Var(Y) + 2Cov(X,Y)$$
 
 ### Part E (Gailmard 5.10)
 
+Show $E((Y|X)|X) = E(Y|X)$
+
+Begin by knowing $f_{Y|X} = \frac{f_{Y,X(Y,X)}}{f_XX}$ and $E(Y) = yf(Y)\;dy$
+
+Plugin in the function we have:
+
+$$E((Y|X)|X) = \int yf((Y|X)|X)\;dy$$
+$$E((Y|X)|X) = \int y\frac{f((Y|X),X)}{f(X)} \;dy$$
+We know that $Y|X$ and $X$ are independent, we can rewrite $f((Y,X), X)$ as $F(Y|X)f(x)$ because, by definition, when $X$ and $Y$ are independent, $F(Y|X) = f(Y)f(X)$.
+
+$$E((Y|X)|X) = \int y\frac{f(Y|X)f(X)}{f(X)} \;dy$$
+
+Cancel terms:
+
+$$E((Y|X)|X) = \int yf(Y|X) dy $$
+
+Which, by definition
+
+$$E(Y|X) = \int yf(Y|X) dy$$
+So,
+$$E((Y|X)|X) =E(Y|X) = \int yf(Y|X) d$$
+
+$$E((Y|X)|X) =E(Y|X)$$
+
 ## Question 2
 
 To get the estimate, we need to understand that $E(X) = \int xf(X)\;dx$
@@ -138,6 +162,19 @@ Which can be rewritten as
 
 $$Var(X) = \frac{a}{a+2} - \frac{a^2}{a^2+2a+1}$$
 
+Get like terms:
+$$Var(X) = \frac{a^2+2a+1}{a^2+2a+1} \frac{a}{a+2} - \frac{a^2}{a^2+2a+1}\frac{a+2}{a+2}$$
+
+Distribute through
+
+$$Var(X) = \frac{a^3+2a^2+a}{(a^2+2a+1)(a+2)} - \frac{a^3+2a^2}{(a^2+2a+1)(a+2)}$$
+
+Put into 1 term
+
+$$Var(X) = \frac{(a^3+2a^2+a) - (a^3+2a^2)}{(a^2+2a+1)(a+2)}$$
+
+Simplify:
+$$Var(X) = \frac{a}{(a^2+2a+1)(a+2)}$$
 
 ## Question 3 
 
@@ -203,9 +240,9 @@ merged_ace_development <- full_join(ace, development, by = "cname_year")
 
 head(merged_ace_development)
 
-summary(merged_ace_development$ajr_settmort)
-summary(merged_ace_development$icrg_qog)
-summary(merged_ace_development$wdi_gdpc)
+merged_ace_development %>% 
+  select(c(ajr_settmort, icrg_qog, wdi_gdpc)) %>% 
+  summary()
 
 
 ggplot(merged_ace_development, aes(x = log(wdi_gdpc), y = icrg_qog)) + 
