@@ -5,6 +5,8 @@ date: "2023-09-24"
 output: pdf_document
 ---
 
+Discussed with Kristen Adams, Edward Howe, Jinglong Guo, Jae Chang, Jae Eun Jun, Soyun Chang, Ryo Sawayma, and Alice Moon
+
 Begin by preparing the environment. The working directory needs to be set where your data will be available (meaning, you will need to change this for your computer), and the packages that are necessary for this exercise need to be loaded from the library (this assumes they are already installed). I'm also clearing the environment before beginning.
 
 ```{r setup}
@@ -245,12 +247,13 @@ merged_ace_development %>%
   summary()
 
 
-ggplot(merged_ace_development, aes(x = log(wdi_gdpc), y = icrg_qog)) + 
+ggplot(merged_ace_development, aes(x = icrg_qog, y = log(wdi_gdpc))) + 
   geom_point() +
   geom_smooth(method = lm) +
   theme_bw() +
-  xlab("Log GDP Per Capita (PPP)") +
-  ylab("Quality of Government")
+  ylab("Log GDP Per Capita (PPP)") +
+  xlab("Quality of Government") +
+  labs(subtitle = "Linear function of X on Y overlaid")
 
 
 ggplot(merged_ace_development, aes(y = log(wdi_gdpc), x = ajr_settmort)) + 
@@ -258,17 +261,21 @@ ggplot(merged_ace_development, aes(y = log(wdi_gdpc), x = ajr_settmort)) +
   geom_smooth(method = lm) +
   theme_bw() +
   ylab("Log GDP Per Capita (PPP)") +
-  xlab("Settler Mortality")
+  xlab("Settler Mortality") +
+  labs(subtitle = "Linear function of X on Y overlaid")
 
 ggplot(merged_ace_development, aes(x = ajr_settmort, y = icrg_qog)) + 
   geom_point() +
   geom_smooth(method = lm) +
   theme_bw() +
   xlab("Settler Mortality") +
-  ylab("Quality of Government")
+  ylab("Quality of Government") +
+  labs(subtitle = "Linear function of X on Y overlaid")
 
 
 ```
+
+The relationships between the 3 variables are represented, and the results meet expectations. Notably, the measure of PCGDP is put into a log scale, to pare down outliers. Also, there is missing data that could be a problem, especially if the missings are correlated to a measure we are interested in. As quality of government increases, so too does PCGDP. Increases in settler mortality led to decreases in both PCGDP and QOG, and it makes sense that this variable affects the other two in the same way, given that they are related in the same direction. These findings bolster the authors' conclusion that "In places where Europeans faced high mortality rates, they could not settle and were more likely to set up extractive institutions. These institutions persisted to the present" (Acemoglu, Johnson, and Robinson, 2001). 
 
 
 
