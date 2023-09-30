@@ -1,0 +1,116 @@
+---
+title: "Problem Set 6"
+author: "Connor Tragesser"
+date: "2023-09-30"
+output: html_document
+---
+
+Begin by preparing the environment. The working directory needs to be set where your data will be available (meaning, you will need to change this for your computer), and the packages that are necessary for this exercise need to be loaded from the library (this assumes they are already installed). I'm also clearing the environment before beginning.
+
+```{r setup}
+library(foreign)
+library(tidyverse)
+library(modelsummary)
+library(formatR)
+library(data.table)
+knitr::opts_chunk$set(tidy.opts = list(width.cutoff = 60), tidy = TRUE)
+knitr::opts_chunk$set(echo = TRUE)
+
+knitr::opts_knit$set(root.dir = "/Users/connortragesser/Documents/Political Science Coursework Readings/Quant 1/Problem Set 6/")
+
+getwd()
+rm(list = ls()) 
+
+```
+
+## Problem 1
+Gailmard 6.1
+
+## Problem 2
+
+One needs an interaction term to measure the way the racial effect may be different by gender. In this model, y = denial of benefits.
+
+$$y = \alpha + \beta_1(race) + \beta_2(gender) + \beta_3(race\times gender) + \epsilon$$
+
+## Problem 3
+
+### Part A
+
+```{r}
+
+set.seed(428743)
+
+empty5 <- matrix(nrow = 5, ncol = 10000)
+empty50 <- matrix(nrow = 50, ncol = 10000)
+empty5000 <- matrix(nrow = 5000, ncol = 10000)
+
+dfempty_n5 <- data.frame(empty5)
+dfempty_n50 <- data.frame(empty50)
+dfempty_n5000 <- data.frame(empty5000)
+
+for(i in colnames(dfempty_n5)) {
+  dfempty_n5[[i]] <- rexp(5, rate = 20) 
+}
+
+for(i in colnames(dfempty_n50)) {
+  dfempty_n50[[i]] <- rexp(50, rate = 20) 
+}
+
+for(i in colnames(dfempty_n5000)) {
+  dfempty_n5000[[i]] <- rexp(5000, rate = 20) 
+}
+
+
+# problem_solver <- function(x) {
+#   emptyx <- matrix(nrow = x, ncol = 10000)
+#   dfempty_nx <- data.frame(emptyx)
+#   for(i in colnames(dfempty_nx)) {
+#     dfempty_nx[[i]] <- rexp(x, rate = 20) 
+#   }
+#   
+#   return(dfempty_nx)
+# }
+# problem_solver(43)
+
+V1 <- matrix(nrow = 1000, ncol = 1)
+df_norm <- data.frame(V1)
+
+df_norm$V1 <- rnorm(1000)
+
+mean_table5 <- dfempty_n5 %>% 
+  summarise_each(mean) %>% 
+  data.table::transpose()
+
+mean_table50 <- dfempty_n50 %>% 
+  summarise_each(mean) %>% 
+  data.table::transpose()
+
+mean_table5000 <- dfempty_n5000 %>% 
+  summarise_each(mean) %>% 
+  data.table::transpose()
+
+ggplot(mean_table5, aes(x = V1)) +
+  geom_histogram() +
+  ggtitle("10000 draws of 5") +
+  theme_bw()
+
+ggplot(mean_table5, aes(x = V1)) +
+  geom_histogram(fill = "red") +
+  geom_histogram(data = df_norm, fill = "blue") +
+  ggtitle("10000 draws of 5") +
+  theme_bw()
+
+ggplot(mean_table50, aes(x = V1)) +
+  geom_histogram() +
+  ggtitle("10000 draws of 50") +
+  theme_bw()
+
+ggplot(mean_table5000, aes(x = V1)) +
+  geom_histogram() +
+  ggtitle("10000 draws of 5000") +
+  theme_bw()
+
+
+```
+
+
