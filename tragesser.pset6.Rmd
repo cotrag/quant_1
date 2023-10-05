@@ -1,9 +1,11 @@
 ---
 title: "Problem Set 6"
 author: "Connor Tragesser"
-date: "2023-09-30"
-output: html_document
+date: "2023-10-05"
+output: pdf_document
 ---
+
+Discussed with Kristen Adams, Edward Howe, Jinglong Guo, Jae Chang, Jae Eun Jun, Soyun Chang, Ryo Sawayma, Stephen Adams, Cece Kinney, and Alice Moon
 
 Begin by preparing the environment. The working directory needs to be set where your data will be available (meaning, you will need to change this for your computer), and the packages that are necessary for this exercise need to be loaded from the library (this assumes they are already installed). I'm also clearing the environment before beginning.
 
@@ -24,17 +26,73 @@ rm(list = ls())
 ```
 
 ## Problem 1
-Gailmard 6.1
+
+### Part A
+Given the regression $E[Y|X] = p$, and $ln(\frac{p}{1-p}) = \alpha + \beta_1X_1\beta_2X_2$
+
+$$ln(\frac{p}{1-p}) = \alpha + \beta_1X_1\beta_2X_2$$
+Raise the two sides of the equation by e
+
+$$\frac{p}{1-p} = e^{\alpha + \beta_1X_1\beta_2X_2}$$
+$$p = (e^{\alpha + \beta_1X_1\beta_2X_2})(1-p)$$
+$$p = e^{\alpha + \beta_1X_1\beta_2X_2} - pe^{\alpha + \beta_1X_1\beta_2X_2}$$
+$$p + pe^{\alpha + \beta_1X_1\beta_2X_2} = e^{\alpha + \beta_1X_1\beta_2X_2}$$
+
+$$p(1 + e^{\alpha + \beta_1X_1\beta_2X_2}) = e^{\alpha + \beta_1X_1\beta_2X_2}$$
+$$p = \frac{e^{\alpha + \beta_1X_1\beta_2X_2}}{1 + e^{\alpha + \beta_1X_1\beta_2X_2}}$$
+
+### Part B
+
+To figure out the effect of $\beta_2$ on $\beta_1$, we need to take the derivative of $g(E(Y|X))$ and $E(Y|X)$ with respect to $X_1$ and see whether $X_2$ is still found in it.
+
+Derivative of $E(Y|X)$:
+
+$$\frac{d(\alpha + \beta_1X_1 + \beta_2X_2)}{dX_1} = $$
+$$0 + \beta_1 + 0$$
+
+In this, $\beta_2$ is not found, so $\beta_2$ does not affect $\beta_1$ here.
+
+Derivative of $g(E(Y|X))$
+$$\frac{d(\frac{e^{\alpha + \beta_1X_1\beta_2X_2}}{1 + e^{\alpha + \beta_1X_1\beta_2X_2}})}{d(X_1)}$$
+
+let 
+
+$$u = e^{\alpha + \beta_1X_1\beta_2X_2}$$
+
+Thus,
+$$du = e^{\alpha + \beta_1X_1\beta_2X_2}(\beta_1)$$
+
+$$\frac{\delta}{\delta X_1}[u\frac{1}{1+u}]$$
+
+Apply multiplicaiton rule $d(uv) = u^{\prime}v + v^{\prime}u$
+
+$$u^{\prime}(u+1)^{-1} + u(-1(1+u)^{-2})u^{\prime}$$
+
+Rewrite
+
+$$u^{\prime}(\frac{1}{u+1} - \frac{u}{(1+u)^2})$$
+
+Get a common denominator
+
+$$u^{\prime}(\frac{u+1}{(u+1)^2} - \frac{u}{(1+u)^2})$$
+
+Simplify 
+
+$$u^{\prime}(\frac{1}{(+1)^2})$$
+
+Plug in known values 
+
+$$e^{\alpha + \beta_1X_1\beta_2X_2}(\beta_1)(\frac{1}{(e^{\alpha + \beta_1X_1\beta_2X_2}+1)^2})$$
+
+$X_2$ is still found, so it affects the effect of $X_1$
 
 ## Problem 2
 
 One needs an interaction term to measure the way the racial effect may be different by gender. In this model, y = denial of benefits.
 
-$$y = \alpha + \beta_1(race) + \beta_2(gender) + \beta_3(race\times gender) + \epsilon$$
+$$g(E[Y|X]) = \alpha + \beta_1(race) + \beta_2(gender) + \beta_3(race\times gender)$$
 
 ## Problem 3
-
-### Part A
 
 ```{r}
 
@@ -49,68 +107,52 @@ dfempty_n50 <- data.frame(empty50)
 dfempty_n5000 <- data.frame(empty5000)
 
 for(i in colnames(dfempty_n5)) {
-  dfempty_n5[[i]] <- rexp(5, rate = 20) 
+  dfempty_n5[[i]] <- rexp(5, rate = 1/20) 
 }
 
 for(i in colnames(dfempty_n50)) {
-  dfempty_n50[[i]] <- rexp(50, rate = 20) 
+  dfempty_n50[[i]] <- rexp(50, rate = 1/20) 
 }
 
 for(i in colnames(dfempty_n5000)) {
-  dfempty_n5000[[i]] <- rexp(5000, rate = 20) 
+  dfempty_n5000[[i]] <- rexp(5000, rate = 1/20) 
 }
 
-
-# problem_solver <- function(x) {
-#   emptyx <- matrix(nrow = x, ncol = 10000)
-#   dfempty_nx <- data.frame(emptyx)
-#   for(i in colnames(dfempty_nx)) {
-#     dfempty_nx[[i]] <- rexp(x, rate = 20) 
-#   }
-#   
-#   return(dfempty_nx)
-# }
-# problem_solver(43)
-
-V1 <- matrix(nrow = 1000, ncol = 1)
-df_norm <- data.frame(V1)
-
-df_norm$V1 <- rnorm(1000)
+V1 <- matrix(nrow = 10000, ncol = 1)
+df_norm_5 <- data.frame(V1)
+df_norm_50 <- data.frame(V1)
+df_norm_5000 <- data.frame(V1)
 
 mean_table5 <- dfempty_n5 %>% 
-  summarise_each(mean) %>% 
+  summarise(across(X1:X10000, mean)) %>% 
   data.table::transpose()
 
 mean_table50 <- dfempty_n50 %>% 
-  summarise_each(mean) %>% 
+  summarise(across(X1:X10000, mean)) %>% 
   data.table::transpose()
 
 mean_table5000 <- dfempty_n5000 %>% 
-  summarise_each(mean) %>% 
+  summarise(across(X1:X10000, mean)) %>% 
   data.table::transpose()
 
-ggplot(mean_table5, aes(x = V1)) +
-  geom_histogram() +
-  ggtitle("10000 draws of 5") +
-  theme_bw()
+df_norm_5$V1 <- rnorm(10000, mean = mean(mean_table5$V1), sd = sd(mean_table5$V1))
+df_norm_50$V1 <- rnorm(10000, mean = mean(mean_table50$V1), sd = sd(mean_table50$V1))
+df_norm_5000$V1 <- rnorm(10000, mean = mean(mean_table5000$V1), sd = sd(mean_table5000$V1))
 
-ggplot(mean_table5, aes(x = V1)) +
-  geom_histogram(fill = "red") +
-  geom_histogram(data = df_norm, fill = "blue") +
-  ggtitle("10000 draws of 5") +
-  theme_bw()
+graph_maker <- function(exp_dataset, norm_dataset, title) {
+  ggplot(exp_dataset, aes(x = V1)) +
+    geom_histogram(aes(y = after_stat(density)), fill = "red", alpha = .8) +
+    geom_density(data = norm_dataset, color = "blue", alpha = .3) +
+    ylab("Density") +
+    xlab("Value") +
+    ggtitle(title) +
+    theme_bw()
+}
 
-ggplot(mean_table50, aes(x = V1)) +
-  geom_histogram() +
-  ggtitle("10000 draws of 50") +
-  theme_bw()
-
-ggplot(mean_table5000, aes(x = V1)) +
-  geom_histogram() +
-  ggtitle("10000 draws of 5000") +
-  theme_bw()
-
+graph_maker(mean_table5, df_norm_5, "Mean of 10000 draws of 5")
+graph_maker(mean_table50, df_norm_50, "Mean of 10000 draws of 50")
+graph_maker(mean_table5000, df_norm_5000, "Mean of 10000 draws of 5000")
 
 ```
 
-
+As the number picked up by each draw increases, the distribution of means more closely matches the normal distribution. This meets expectations based on the central limit theorem. 
