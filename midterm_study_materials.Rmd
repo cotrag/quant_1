@@ -1,0 +1,133 @@
+---
+title: "midterm_study_materials"
+author: "Connor Tragesser"
+date: "2023-09-28"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Equations/Properties
+
+### Lecture 2
+
+mean:
+$$1/n \sum x_i$$
+if $y_i = k \times x_i$, then $\bar{y} = k \times \bar{x}$
+if $y_i = k + x_i$, then $\bar{y} = k + \bar{x}$
+
+Mean squared error:
+
+MSE (g) = $\frac{ \sum_{i = 1}^{N}(x_i - g)^2}{N}$, numerator can be distributed through
+
+Sample standard devaiton:
+
+$$s = \sqrt{\frac{\sum_{i = 1}^{N} (x_i - \bar{x})}{N-1}} $$
+
+if 
+$y_i = k \times x_i$, 
+then 
+$s_y = k \times s_x$
+
+if $y_i = k + x_i$
+, then 
+$s_y = s_x$
+
+Covariance:
+
+$$Cov (x,y) = \frac{\sum  (x - \bar{x})(y - \bar{y})}{N-1}$$
+
+To standardize a variable:
+
+$$\frac{x-\bar{x}}{s}$$
+Correlation Coefficient (r)
+
+$$r_{xy} = \frac{Cov (x,y)}{s_xs_y} $$
+
+Regression is a conditional mean function, minimizes the sum of squared prediction errors 
+
+beta defined as 
+
+$$b = r\times \frac{s_y}{s_x}$$
+$$a \ \bar{y} - b\bar{x}$$
+
+$$var(y) = var(a + bx) + var(e)$$
+$$R^2 = 1 - \frac{var(e)}{var(y)}$$
+
+### Lecture 3
+
+Union: $\cup$
+Intersection: $\cap$
+Complement = $1 - original$
+
+Probability rules:
+
+1. complement rule 
+
+$$p(A^{'}) = 1 - p(A)$$
+2. addition rule 
+
+$$p(A\cup B) = p(A) + p(B)$$
+3. multiplication rule
+
+$$p(A\cap B) = p(A) + p(B|A)$$
+Conditional probability:
+
+$$p(A|B) = \frac{p(A\cap B)}{p(B)}$$
+
+$$p(A|B) = 1 - p(A^C|B)$$
+Multiplication rule for indep events 
+
+If B is independent of A, $P(B|A) = P(B)$, sort of a special case of the conditional probability rule 
+
+Addition rule for non mutually exclusive events 
+
+$$P(A \cup B) = p(A) + P(B) - P(A \cap B)$$
+
+Law of total probability 
+
+$$p(E) = \sum_{i = 1}^{N} p(E|F_i) \times p(F_i) $$
+
+Bayes rule 
+
+$$p(B|A) = \frac{p(B)p(A|B)}{p(A)}$$
+
+Can be rewritten as 
+
+$$p(A) = p(A|B)p(B) + p(A|B^c)p(B^c)$$
+Independence:
+
+if A and B are independent $p(A \cap B) = p(A)p(B)$
+
+see computing probabilities slide 
+
+Sources of uncertainty
+
+sampling uncertainty- differences between the population and the randomly selected sample
+theoretical uncertainly- theoretical models are simplifications of reality, cannot explain everything
+fundamental uncertainty- human agency is not deterministic "Uncertainty permeates the social world and structures how we can
+learn about it."
+
+### Lecture 4
+
+Binomial random variables, probability of success defined as 
+
+$$p(K = k) = (1-p)^{n-k}p^k {n \choose k}$$
+
+
+Probability density function 
+
+$$f(x) = \frac{dF(X)}{dx}$$
+
+thus,
+
+$$F(x) = \int_{-\infty}^{\infty}f(z)dz $$
+
+Normal random variable
+
+$$f(x) = \frac{1}{\sqrt{2\pi}}e^{\frac{-x^2}{2}}$$
+
+
+
