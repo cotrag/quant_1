@@ -1,0 +1,228 @@
+---
+title: "Problem Set 7"
+author: "Connor Tragesser"
+date: "2023-10-16"
+output: pdf_document
+---
+
+Begin by preparing the environment. The working directory needs to be set where your data will be available (meaning, you will need to change this for your computer), and the packages that are necessary for this exercise need to be loaded from the library (this assumes they are already installed). I'm also clearing the environment before beginning.
+
+```{r setup}
+library(foreign)
+library(tidyverse)
+library(modelsummary)
+library(formatR)
+library(data.table)
+knitr::opts_chunk$set(tidy.opts = list(width.cutoff = 60), tidy = TRUE)
+knitr::opts_chunk$set(echo = TRUE)
+
+knitr::opts_knit$set(root.dir = "/Users/connortragesser/Documents/Political Science Coursework Readings/Quant 1/Problem Set 7/")
+
+getwd()
+rm(list = ls()) 
+
+```
+
+## Problem 1
+
+### Part A
+
+```{r}
+pnorm(6, mean = 4, sd = 2) - pnorm(2, mean = 4, sd = 2)
+
+```
+
+The answer is .68
+
+### Part B
+
+```{r}
+(60-66)/4
+```
+
+The answer is -1.5
+
+### Part C
+This woman is very tall, she is more than 2 standard deviations above the mean. 
+
+## Problem 2
+
+### Part A
+It tends to approach the population mean.
+
+### Part B
+$$Standard\;Error = \frac{\sigma}{\sqrt n}$$
+
+```{r}
+4/(100^(1/2))
+```
+
+The standard error is 0.4
+
+### Part C
+
+The sampling sizes would need to be 40, 100, or 1000.
+
+### Part D
+
+The standard deviation and standard error of a population distribution are the same.
+
+### Part E
+
+It has thicker tails.
+
+## Problem 3
+
+Point 1 is true... EXPLAIN?
+
+## Problem 4
+
+### Gailmard 7.4
+
+### Gailmard 7.5
+
+### Gailmard 7.6
+
+### Gailmard 7.6
+
+## Problem 5
+
+Setting up the dataset
+
+```{r}
+years <- c(1968:1978)
+sui_rate <- c(10.7, 11.2, 11.3, 11.9, 12.1, 12.0, 12.3, 12.4, 12.7, 13.6, 11.8)
+ue <- c(3.6, 3.7, 4.8, 6.0, 5.7, 4.8, 5.7,  8.4, 7.8, 7.2, 5.7)
+q5_dataset <- cbind(years, sui_rate, ue)
+
+q5_dataset <- as.data.frame(q5_dataset)
+
+```
+
+### Part A
+
+In this situation, the outcome variable ($Y$) is suicide rate and the variable of interest ($\beta_1$) is unemployment rate.
+
+Known equations that will help solve:
+
+$$(1)\; y = \beta_0 + \beta_1x$$
+$$(2)\; \beta_1 = r\times \frac{s_y}{s_x}$$
+$$(3)\; r = \frac{\sum(x-\bar x)(y-\bar y)}{\sqrt{\sum(x-\bar x)^2\sum(y-\bar y)^2}}$$
+
+
+$$(4)\; \beta_0 = \bar Y - \beta_1 \bar X$$
+
+$$(5) s_y = \sqrt \frac{\sum(y-\bar y)^2}{N-1}$$
+$$(6) s_x = \sqrt  \frac{\sum(x-\bar x)^2}{N-1}$$
+
+```{r}
+
+# Begin by calculating the means of the variables of interest 
+mean_suicide <- (10.7 + 11.2 + 11.3 + 11.9 + 12.1 + 12.0 + 12.3 + 12.4 + 12.7 + 13.6 + 11.8)/11
+mean_ue <- (3.6 + 3.7 + 4.8 + 6.0 + 5.7 + 4.8 + 5.7 +  8.4 + 7.8 + 7.2 + 5.7)/11
+
+# working out deviation and deviation squared for the X
+q5_dataset$ue_deviation <- q5_dataset$ue - mean_ue
+q5_dataset$ue_deviation_squared <- q5_dataset$ue_deviation^2
+q5_dataset$ue_deviation_squared
+ue_deviation_squared_sum = 4.681322314 + 4.258595041 + 0.928595041 + 0.055867769 + 0.004049587 + 0.928595041 + 0.004049587 + 6.950413223 + 4.146776860 + 2.063140496 + 0.004049587
+
+# working out deviation and deviation squared for the Y
+q5_dataset$suicide_deviation <- q5_dataset$sui_rate - mean_suicide
+q5_dataset$suicide_deviation_squared <- q5_dataset$suicide_deviation^2
+q5_dataset$suicide_deviation_squared
+suicide_deviation_squared_sum = 1.69 + 0.64 + 0.49 + 0.01 + 0.01 + 0.00 + 0.09 + 0.16 + 0.49 + 2.56 + 0.04
+
+# getting value that multiplies the deviation for X and Y, for the numerator for (3)
+
+q5_dataset$deviations_mult = q5_dataset$ue_deviation * q5_dataset$suicide_deviation
+q5_dataset$deviations_mult
+deviations_mult_sum = 2.812727273 + 1.650909091 + 0.674545455 + -0.023636364 + -0.006363636 + 0.000000000 + -0.019090909 + 1.054545455 + 1.425454545 + 2.298181818 + 0.012727273
+
+```
+
+Plugging the calculated values into equation $(3)$ to get pearson's correlation:
+
+```{r}
+r = (deviations_mult_sum)/((ue_deviation_squared_sum * suicide_deviation_squared_sum)^(1/2))
+```
+
+
+Now calculate the standard deviations using $(5)$ & $(6)$. We know $N = 11$
+
+```{r}
+sd_suicide <- (suicide_deviation_squared_sum/(11 - 1))^(1/2)
+sd_ue <- (ue_deviation_squared_sum/(11-1))^(1/2)
+```
+
+Plug in values for $(2)$ to get $\beta_1$
+
+```{r}
+beta_1 = r*(sd_suicide/sd_ue)
+beta_1
+```
+
+Now use $(4)$ to calculate the intercept $\beta_0$
+
+```{r}
+beta_0 = mean_suicide - (beta_1 * mean_ue)
+beta_0
+```
+
+
+Thus, the estimated regression line is 
+
+$$y = 9.629817 + 0.4112305x$$
+
+### Part B
+
+```{r}
+
+# function that inputs x and y and gives us beta1 and beta0
+
+
+regression_manual <- function(x, y, N) {
+  mean_x = mean(x)
+  mean_y = mean(y)
+  dev_x = x - mean_x
+  dev_xsq = (x - mean_x)^2
+  dev_y = y - mean_y
+  dev_ysq = (y - mean_y)^2
+  dev_mult_sum = sum(dev_x*dev_y)
+  pearson = dev_mult_sum/((sum(dev_xsq) * sum(dev_ysq))^(1/2))
+  sd_x = (sum(dev_xsq)/(N-1))^(1/2)
+  sd_y = (sum(dev_ysq)/(N-1))^(1/2)
+  beta_1 = pearson * (sd_y / sd_x)
+  beta_0 = mean_y - (beta_1 * mean_x)
+  paste("The coefficient for X is", beta_1, "and The intercept is", beta_0)
+}
+
+regression_manual(q5_dataset$ue, q5_dataset$sui_rate, 11)
+
+```
+
+### Part C
+
+```{r}
+ggplot(q5_dataset, aes(x = ue, y = sui_rate)) +
+  geom_point() +
+  theme_bw() +
+  xlab("Unemployment Rate (%)") +
+  ylab("Suicides per 100,000") +
+  geom_abline(aes(intercept = 9.629817, slope = 0.4112305))
+```
+
+The slope of the regression lines that for every 1% increase in the unemployment rate, the number of suicides per 100,000 people increases by an average of .411. It also says that 
+
+### Part D
+If the current UE rate is .055, we can use the equation $$y = 9.629817 + 0.4112305(.055)$$ to find the expected suicide rate:
+```{r}
+9.629817 + (0.4112305*.055)
+```
+
+This seems like a reasonable estimate. However, I would question whether a linear relationship is effective in describing the phenomenon overall. It seems likely that suicides plateau at both the high and low end. People commit suicide for reasons other than unemployment, so it seems unlikely that suicide would decrease linearly as unemployment approaches 0. It also seems like there would be a sort of maximum steady state of suicides, where after increases in unemployment would not correspond to linear increases in suicides, instead the increases would diminish.
+
+### Part E
+
+In this scenario, the coefficient for $\beta_1$ would decrease considerably. This is because the unemployment would be relatively high for the dataset, but the suicide rate would be relatively low. in this case, the pearson's correlation would decrease significantly, leading to a lower $\beta_1$.
+
