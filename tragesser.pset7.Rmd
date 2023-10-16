@@ -199,6 +199,22 @@ regression_manual <- function(x, y, N) {
 
 regression_manual(q5_dataset$ue, q5_dataset$sui_rate, 11)
 
+regression_manual2 <- function(x, y, N) {
+ for (i in c(x,y)) {
+   mean_i = mean(i)
+   dev_i = i - mean_i
+   dev_isq = (i - mean_i)^2
+   sd_i = (sum(dev_isq)/(N-1))^(1/2)
+ }
+  dev_mult_sum = sum(dev_x*dev_y)
+  pearson = dev_mult_sum/((sum(dev_xsq) * sum(dev_ysq))^(1/2))
+  beta_1 = pearson * (sd_y / sd_x)
+  beta_0 = mean_y - (beta_1 * mean_x)
+  paste("The coefficient for X is", beta_1, "and The intercept is", beta_0)
+}
+
+regression_manual2(q5_dataset$ue, q5_dataset$sui_rate, 11)
+
 ```
 
 ### Part C
