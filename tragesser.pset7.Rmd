@@ -21,6 +21,8 @@ knitr::opts_knit$set(root.dir = "/Users/connortragesser/Documents/Political Scie
 getwd()
 rm(list = ls()) 
 
+set.seed(2453)
+
 ```
 
 ## Problem 1
@@ -79,11 +81,111 @@ Point 1 is true... EXPLAIN?
 
 ### Gailmard 7.4
 
+```{r}
+draws_normal <- replicate(10000, rnorm(30))
+draws_df <- as.data.frame(draws_normal)
+
+draws_df <- draws_df %>% 
+  mutate(across(everything(), ~sum((. - mean(.))^2)/29, .names = "sample_var_{.col}")) %>% 
+  mutate(across(V1:V10000, ~(sum((. - mean(.))^2)/29) * 29, .names = "other_calc_{.col}"))
+
+# now get only the calculations we're interested in, and only need 1 row 
+
+calcs <- draws_df %>% 
+  select(starts_with("other_calc_")) %>% 
+  slice(1:1) %>% 
+  data.table::transpose()
+
+#COMPARE TO CHI SQUARED?? 
+
+ggplot(aes(x = V1), data = calcs) +
+  geom_histogram() +
+  theme_bw()
+
+rm(draws_df)
+rm(calcs)
+
+```
+
+
 ### Gailmard 7.5
 
-### Gailmard 7.6
+```{r}
+draws_uniform <- replicate(10000, runif(30, min = -3, max = 3))
+draws_df <- as.data.frame(draws_uniform)
+
+draws_df <- draws_df %>% 
+  mutate(across(everything(), ~sum((. - mean(.))^2)/29, .names = "sample_var_{.col}")) %>% 
+  mutate(across(V1:V10000, ~((sum((. - mean(.))^2)/29) * 29)/((1/12)*((3 + 3)^2)), .names = "other_calc_{.col}"))
+
+# now get only the calculations we're interested in, and only need 1 row 
+
+calcs <- draws_df %>% 
+  select(starts_with("other_calc_")) %>% 
+  slice(1:1) %>% 
+  data.table::transpose()
+
+#COMPARE TO CHI SQUARED?? 
+
+ggplot(aes(x = V1), data = calcs) +
+  geom_histogram() +
+  theme_bw()
+
+rm(draws_df)
+rm(calcs)
+
+```
 
 ### Gailmard 7.6
+
+```{r}
+draws_df <- as.data.frame(draws_normal)
+
+draws_df <- draws_df %>% 
+  mutate(across(everything(), ~(mean(.)-1)/(1/(30^(1/2))), .names = "t_{.col}"))
+
+# now get only the calculations we're interested in, and only need 1 row 
+
+calcs <- draws_df %>% 
+  select(starts_with("t_")) %>% 
+  slice(1:1) %>% 
+  data.table::transpose()
+
+#COMPARE TO CHI SQUARED?? 
+
+ggplot(aes(x = V1), data = calcs) +
+  geom_histogram() +
+  theme_bw()
+
+rm(draws_df)
+rm(calcs)
+```
+
+### Gailmard 7.7
+
+```{r}
+draws_df <- as.data.frame(draws_uniform)
+
+draws_df <- draws_df %>% 
+  mutate(across(everything(), ~ (mean(.)-((-3+3)/2))/((sum((. - mean(.))^2)/29)/(30^(1/2))), .names = "t_{.col}"))
+
+# now get only the calculations we're interested in, and only need 1 row 
+
+calcs <- draws_df %>% 
+  select(starts_with("t_")) %>% 
+  slice(1:1) %>% 
+  data.table::transpose()
+
+#COMPARE TO CHI SQUARED?? 
+
+ggplot(aes(x = V1), data = calcs) +
+  geom_histogram() +
+  theme_bw()
+
+rm(draws_df)
+rm(calcs)
+```
+
 
 ## Problem 5
 
@@ -213,7 +315,7 @@ regression_manual2 <- function(x, y, N) {
   paste("The coefficient for X is", beta_1, "and The intercept is", beta_0)
 }
 
-regression_manual2(q5_dataset$ue, q5_dataset$sui_rate, 11)
+#regression_manual2(q5_dataset$ue, q5_dataset$sui_rate, 11)
 
 ```
 
