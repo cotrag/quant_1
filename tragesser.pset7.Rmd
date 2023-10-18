@@ -1,7 +1,7 @@
 ---
 title: "Problem Set 7"
 author: "Connor Tragesser"
-date: "2023-10-16"
+date: "2023-10-18"
 output: pdf_document
 ---
 
@@ -282,7 +282,6 @@ $$y = 9.629817 + 0.4112305x$$
 
 # function that inputs x and y and gives us beta1 and beta0
 
-
 regression_manual <- function(x, y, N) {
   mean_x = mean(x)
   mean_y = mean(y)
@@ -302,17 +301,43 @@ regression_manual <- function(x, y, N) {
 regression_manual(q5_dataset$ue, q5_dataset$sui_rate, 11)
 
 regression_manual2 <- function(x, y, N) {
- for (i in c(x,y)) {
-   mean_i = mean(i)
-   dev_i = i - mean_i
-   dev_isq = (i - mean_i)^2
-   sd_i = (sum(dev_isq)/(N-1))^(1/2)
- }
-  dev_mult_sum = sum(dev_x*dev_y)
-  pearson = dev_mult_sum/((sum(dev_xsq) * sum(dev_ysq))^(1/2))
-  beta_1 = pearson * (sd_y / sd_x)
-  beta_0 = mean_y - (beta_1 * mean_x)
-  paste("The coefficient for X is", beta_1, "and The intercept is", beta_0)
+  
+  input_x <- deparse(substitute(x))
+  input_y <- deparse(substitute(y))
+  print(input_x)
+  print(input_y)
+  apply(c(x, y), 2, mean)
+
+  
+  # for (i in c(input_x,input_y)) {
+  #   input_i <- deparse(substitute(i))
+  #   print(input_i)
+  #   
+  #   if ("i" == "x") {
+  #     z = "i"
+  #   }
+  #   if ("i" == "x") {
+  #     z = "y"
+  #   }
+  #   
+  #   print(col_name)
+  #   mean <- paste("mean_", i, sep = "")
+  #   dev <- paste("dev_", i, sep = "")
+  #   devsq <- paste("devsq_", i, sep = "")
+  #   sd <- paste("sd_", i, sep = "")
+  # 
+  #   # Create a new object with the generated name
+  #   assign(mean, mean(i))
+  #   print(mean)
+  #   assign(dev, i - mean(i)) 
+  #   assign(devsq, (i - mean(i))^2)
+  #   assign(sd, (sum(dev_isq)/(N-1))^(1/2))
+  # }
+  # dev_mult_sum = sum(dev_x*dev_y)
+  # pearson = dev_mult_sum/((sum(devsq_x) * sum(devsq_y))^(1/2))
+  # beta_1 = pearson * (sd_y / sd_x)
+  # beta_0 = mean_y - (beta_1 * mean_x)
+  # print(paste("The coefficient for X is", beta_1, "and The intercept is", beta_0))
 }
 
 #regression_manual2(q5_dataset$ue, q5_dataset$sui_rate, 11)
