@@ -1,9 +1,11 @@
 ---
 title: "Problem Set 7"
 author: "Connor Tragesser"
-date: "2023-10-18"
+date: "2023-10-19"
 output: pdf_document
 ---
+
+Discussed with Edward Hohe, Soyun Chang, Alice Moon, Cece Kenney, Alice Moon, and Abdullah Jaber.
 
 Begin by preparing the environment. The working directory needs to be set where your data will be available (meaning, you will need to change this for your computer), and the packages that are necessary for this exercise need to be loaded from the library (this assumes they are already installed). I'm also clearing the environment before beginning.
 
@@ -67,7 +69,7 @@ The sampling sizes would need to be 40, 100, or 1000.
 
 ### Part D
 
-The standard deviation and standard error of a population distribution are the same.
+The standard error is the standard deviation of the sampling distribution.
 
 ### Part E
 
@@ -75,19 +77,31 @@ It has thicker tails.
 
 ## Problem 3
 
-Point 1 is true... EXPLAIN?
+### Part 1
+FALSE
+### Part 2
+FALSE
+### Part 3
+TRUE
+### Part 4
+FALSE
+### Part 5
+FALSE
 
 ## Problem 4
 
 ### Gailmard 7.4
 
 ```{r}
-draws_normal <- replicate(10000, rnorm(30))
+
+n = 30
+
+draws_normal <- replicate(10000, rnorm(n))
 draws_df <- as.data.frame(draws_normal)
 
 draws_df <- draws_df %>% 
-  mutate(across(everything(), ~sum((. - mean(.))^2)/29, .names = "sample_var_{.col}")) %>% 
-  mutate(across(V1:V10000, ~(sum((. - mean(.))^2)/29) * 29, .names = "other_calc_{.col}"))
+  mutate(across(everything(), ~var(.), .names = "sample_var_{.col}")) %>% 
+  mutate(across(V1:V10000, ~var(.) * n-1, .names = "other_calc_{.col}"))
 
 # now get only the calculations we're interested in, and only need 1 row 
 
@@ -96,10 +110,9 @@ calcs <- draws_df %>%
   slice(1:1) %>% 
   data.table::transpose()
 
-#COMPARE TO CHI SQUARED?? 
-
 ggplot(aes(x = V1), data = calcs) +
-  geom_histogram() +
+  geom_histogram(aes(y = ..density..)) +
+  stat_function(fun = dchisq, args = list(df = n-1)) +
   theme_bw()
 
 rm(draws_df)
@@ -111,12 +124,12 @@ rm(calcs)
 ### Gailmard 7.5
 
 ```{r}
-draws_uniform <- replicate(10000, runif(30, min = -3, max = 3))
+draws_uniform <- replicate(10000, runif(n, min = -3, max = 3))
 draws_df <- as.data.frame(draws_uniform)
 
 draws_df <- draws_df %>% 
-  mutate(across(everything(), ~sum((. - mean(.))^2)/29, .names = "sample_var_{.col}")) %>% 
-  mutate(across(V1:V10000, ~((sum((. - mean(.))^2)/29) * 29)/((1/12)*((3 + 3)^2)), .names = "other_calc_{.col}"))
+  mutate(across(everything(), ~var(.), .names = "sample_var_{.col}")) %>% 
+  mutate(across(V1:V10000, ~(var(.) * n-1)/((1/12)*((3 + 3)^2)), .names = "other_calc_{.col}"))
 
 # now get only the calculations we're interested in, and only need 1 row 
 
@@ -125,10 +138,9 @@ calcs <- draws_df %>%
   slice(1:1) %>% 
   data.table::transpose()
 
-#COMPARE TO CHI SQUARED?? 
-
 ggplot(aes(x = V1), data = calcs) +
-  geom_histogram() +
+  geom_histogram(aes(y = ..density..)) +
+  stat_function(fun = dchisq, args = list(df = n-1)) +
   theme_bw()
 
 rm(draws_df)
@@ -142,7 +154,7 @@ rm(calcs)
 draws_df <- as.data.frame(draws_normal)
 
 draws_df <- draws_df %>% 
-  mutate(across(everything(), ~(mean(.)-1)/(1/(30^(1/2))), .names = "t_{.col}"))
+  mutate(across(everything(), ~(mean(.)-0)/(sd(.)/(n-1)^(1/2)), .names = "t_{.col}"))
 
 # now get only the calculations we're interested in, and only need 1 row 
 
@@ -151,10 +163,9 @@ calcs <- draws_df %>%
   slice(1:1) %>% 
   data.table::transpose()
 
-#COMPARE TO CHI SQUARED?? 
-
 ggplot(aes(x = V1), data = calcs) +
-  geom_histogram() +
+  geom_histogram(aes(y = ..density..)) +
+  stat_function(fun = dt, args = list(df = n-1)) +
   theme_bw()
 
 rm(draws_df)
@@ -167,7 +178,7 @@ rm(calcs)
 draws_df <- as.data.frame(draws_uniform)
 
 draws_df <- draws_df %>% 
-  mutate(across(everything(), ~ (mean(.)-((-3+3)/2))/((sum((. - mean(.))^2)/29)/(30^(1/2))), .names = "t_{.col}"))
+  mutate(across(everything(), ~(mean(.)-0)/(sd(.)/(n-1)^(1/2)), .names = "t_{.col}"))
 
 # now get only the calculations we're interested in, and only need 1 row 
 
@@ -176,10 +187,9 @@ calcs <- draws_df %>%
   slice(1:1) %>% 
   data.table::transpose()
 
-#COMPARE TO CHI SQUARED?? 
-
 ggplot(aes(x = V1), data = calcs) +
-  geom_histogram() +
+  geom_histogram(aes(y = ..density..)) +
+  stat_function(fun = dt, args = list(df = n-1)) +
   theme_bw()
 
 rm(draws_df)
@@ -283,64 +293,12 @@ $$y = 9.629817 + 0.4112305x$$
 # function that inputs x and y and gives us beta1 and beta0
 
 regression_manual <- function(x, y, N) {
-  mean_x = mean(x)
-  mean_y = mean(y)
-  dev_x = x - mean_x
-  dev_xsq = (x - mean_x)^2
-  dev_y = y - mean_y
-  dev_ysq = (y - mean_y)^2
-  dev_mult_sum = sum(dev_x*dev_y)
-  pearson = dev_mult_sum/((sum(dev_xsq) * sum(dev_ysq))^(1/2))
-  sd_x = (sum(dev_xsq)/(N-1))^(1/2)
-  sd_y = (sum(dev_ysq)/(N-1))^(1/2)
-  beta_1 = pearson * (sd_y / sd_x)
-  beta_0 = mean_y - (beta_1 * mean_x)
+  beta_1 = cor(x, y)*(sd(y)/sd(x))
+  beta_0 = mean(y) - (beta_1 * mean(x))
   paste("The coefficient for X is", beta_1, "and The intercept is", beta_0)
 }
 
 regression_manual(q5_dataset$ue, q5_dataset$sui_rate, 11)
-
-regression_manual2 <- function(x, y, N) {
-  
-  input_x <- deparse(substitute(x))
-  input_y <- deparse(substitute(y))
-  print(input_x)
-  print(input_y)
-  apply(c(x, y), 2, mean)
-
-  
-  # for (i in c(input_x,input_y)) {
-  #   input_i <- deparse(substitute(i))
-  #   print(input_i)
-  #   
-  #   if ("i" == "x") {
-  #     z = "i"
-  #   }
-  #   if ("i" == "x") {
-  #     z = "y"
-  #   }
-  #   
-  #   print(col_name)
-  #   mean <- paste("mean_", i, sep = "")
-  #   dev <- paste("dev_", i, sep = "")
-  #   devsq <- paste("devsq_", i, sep = "")
-  #   sd <- paste("sd_", i, sep = "")
-  # 
-  #   # Create a new object with the generated name
-  #   assign(mean, mean(i))
-  #   print(mean)
-  #   assign(dev, i - mean(i)) 
-  #   assign(devsq, (i - mean(i))^2)
-  #   assign(sd, (sum(dev_isq)/(N-1))^(1/2))
-  # }
-  # dev_mult_sum = sum(dev_x*dev_y)
-  # pearson = dev_mult_sum/((sum(devsq_x) * sum(devsq_y))^(1/2))
-  # beta_1 = pearson * (sd_y / sd_x)
-  # beta_0 = mean_y - (beta_1 * mean_x)
-  # print(paste("The coefficient for X is", beta_1, "and The intercept is", beta_0))
-}
-
-#regression_manual2(q5_dataset$ue, q5_dataset$sui_rate, 11)
 
 ```
 
@@ -358,9 +316,9 @@ ggplot(q5_dataset, aes(x = ue, y = sui_rate)) +
 The slope of the regression lines that for every 1% increase in the unemployment rate, the number of suicides per 100,000 people increases by an average of .411. It also says that 
 
 ### Part D
-If the current UE rate is .055, we can use the equation $$y = 9.629817 + 0.4112305(.055)$$ to find the expected suicide rate:
+If the current UE rate is 5.5%, we can use the equation $$y = 9.629817 + 0.4112305(.055)$$ to find the expected suicide rate:
 ```{r}
-9.629817 + (0.4112305*.055)
+9.629817 + (0.4112305*5.5)
 ```
 
 This seems like a reasonable estimate. However, I would question whether a linear relationship is effective in describing the phenomenon overall. It seems likely that suicides plateau at both the high and low end. People commit suicide for reasons other than unemployment, so it seems unlikely that suicide would decrease linearly as unemployment approaches 0. It also seems like there would be a sort of maximum steady state of suicides, where after increases in unemployment would not correspond to linear increases in suicides, instead the increases would diminish.
