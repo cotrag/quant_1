@@ -32,20 +32,19 @@ The null hypothesis usually means "the expected value of a parameter if there is
 
 ### Part B
 
-We have independent samples and We could use a two-sample t-test to test for changes in feelings toward Congress.
+We have dependent samples.
 
 ### Part C
 
-The evidence against the null hypothesis grows stronger
+to test the null hypothesis of no difference
 
 ### Part D
 
-The probability, assuming the null hypothesis is true, that a test statistic will take value
-at least as extreme as what is actually observed
+The evidence against the null hypothesis grows stronger.
 
 ### Part E
 
-In a test of hypotheses, the p-value is the probability, assuming the null hypothesis is true, that a test statistic will take value at least as extreme as what is actually observed
+In a test of hypotheses, the p-value is the probability, assuming the null hypothesis is true, that a test statistic will take value at least as extreme as what is actually observed.
 
 ## Problem 2
 
@@ -62,7 +61,7 @@ rm(z)
 
 ```
 
-This Z score suggests that the states are significantly different in their average annual PC income.
+This Z score allows us to reject the null hypothesis that the average PC income is the same between the Obama and McCain states.
 
 ### Part B
 It does not. Andrew Gelman notes this phenomenon in his book Red State Blue State Rich State Poor State, calling it the "red-blue paradox" but it is an application of Simpson's Paradox. In short, Simpson's paradox describes phenomena where aggregation of groups of data mask underlying effects. The proposition that people could still tend to vote republican as they get richer would still hold if the shift is heterogeneous between states. As in, the increase is smaller in blue states and larger in red states. 
@@ -70,11 +69,16 @@ It does not. Andrew Gelman notes this phenomenon in his book Red State Blue Stat
 ### Gailmard 8.2
 
 ### Part i
-The null hypothesis is that the proprtion that comes up heads is .5
+The null hypothesis is that the proportion that comes up heads is .5
+
+$$H_0 = .5$$
+$$$$
 
 ```{r}
 z <- ((5/14) - .5)/sqrt((.5*.5)/14)
-1 - pnorm(z)
+
+pnorm(z)
+
 ```
 This test shows that we fail to reject the null hypothesis that the coin is fair.
 
@@ -125,17 +129,16 @@ pakistan$ln_hhincome = log(pakistan$hhincome)
 
 ### Part A
 
-The null hypothesis, or $H_0$, is that the average log-household income for Pakistani households is log-38,000 Pakistani Rupees/year. The alternative Hypothesis $H_1$, is that the average log-household income is different from log-38,000in either direction.
-
-```{r}
-t.test(pakistan$ln_hhincome, mu = log(38000))
-
-```
-This test shows that we reject the null hypothesis.
+The null hypothesis, or $H_0$, is that the average log-household income for Pakistani households is log-38,000 Pakistani Rupees/year. The alternative Hypothesis $H_1$, is that the average log-household income is different from log-38,000 in either direction. We are calculating the one sample t-test.
 
 ### Part B
 
-Hypothesis testing of means relies on the cenral limit theorem to calculate z-scores, which would not be achieved with a sample size of 12.
+Hypothesis testing of means relies on the central limit theorem to calculate z-scores, which would not be achieved with a sample size of 12. 
 
 ### Part C
 
+```{r}
+t.test(pakistan$ln_hhincome, mu = log(38000))
+```
+
+This test shows that we reject the null hypothesis.
