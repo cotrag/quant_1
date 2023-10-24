@@ -55,13 +55,14 @@ I will use a two sample difference in means test. The null hypothesis is that th
 
 ```{r}
 
-z <- (44500 - 38500) / (sqrt((5400^2/29) + (4600^2/21)))
-1 - pnorm(z)
-rm(z)
+t <- (44500 - 38500) / (sqrt((5400^2/29) + (4600^2/21)))
+
+# what is the degrees of freedom??
+2*pt(t, df = 49, lower.tail = FALSE)
 
 ```
 
-This Z score allows us to reject the null hypothesis that the average PC income is the same between the Obama and McCain states.
+This t score allows us to reject the null hypothesis that the average PC income is the same between the Obama and McCain states.
 
 ### Part B
 It does not. Andrew Gelman notes this phenomenon in his book Red State Blue State Rich State Poor State, calling it the "red-blue paradox" but it is an application of Simpson's Paradox. In short, Simpson's paradox describes phenomena where aggregation of groups of data mask underlying effects. The proposition that people could still tend to vote republican as they get richer would still hold if the shift is heterogeneous between states. As in, the increase is smaller in blue states and larger in red states. 
@@ -71,19 +72,28 @@ It does not. Andrew Gelman notes this phenomenon in his book Red State Blue Stat
 ### Part i
 The null hypothesis is that the proportion that comes up heads is .5
 
-$$H_0 = .5$$
-$$$$
-
+$$H_0: \hat\pi = .5$$
+$$H_1: \hat\pi \neq .5$$
 ```{r}
 z <- ((5/14) - .5)/sqrt((.5*.5)/14)
 
-pnorm(z)
+2*pnorm(z)
 
 ```
 This test shows that we fail to reject the null hypothesis that the coin is fair.
 
 ### Part ii
 
+
+Binomial probability 
+
+Calculate the probability of observing this under the null hypothesis of $H_0: \hat\pi = .5$
+
+```{r}
+choose(14, 5) * (.5^5) * (.5^9)
+```
+
+Thus, we fail to reject the null hypothesis at the $\alpha = 0.05$ level, we do not have enough evidence that our observed $\pi$ goes against our assumption.
 
 ## Problem 3
 
