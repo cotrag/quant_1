@@ -4,6 +4,9 @@ author: "Connor Tragesser"
 date: "2023-10-22"
 output: pdf_document
 ---
+
+Discussed with Alice Moon, Ryo Sawayama, SoYun Chang, Jae Eun Jun, Jinglong Guo, and Jae Chang. 
+
 Begin by preparing the environment. The working directory needs to be set where your data will be available (meaning, you will need to change this for your computer), and the packages that are necessary for this exercise need to be loaded from the library (this assumes they are already installed). I'm also clearing the environment before beginning.
 
 ```{r setup}
@@ -36,7 +39,7 @@ We have dependent samples.
 
 ### Part C
 
-to test the null hypothesis of no difference
+We use the pooled estimate of the proportion in two samples to test the null hypothesis of no difference.
 
 ### Part D
 
@@ -53,12 +56,16 @@ In a test of hypotheses, the p-value is the probability, assuming the null hypot
 ### Part A
 I will use a two sample difference in means test. The null hypothesis is that the average PC income is the same between the Obama and McCain states, and the alternative hypothesis is that they will be different. It will be a two-tailed test. 
 
+the equation below is used to calculate the degrees of freedom for the t-distribution in this case 
+
+$$\frac{(\frac{S_1^2}{N_1} + \frac{S_2^2}{N_2})^2}{(\frac{S_1^2}{N_1})^2/(N_1 - 1) + (\frac{S_2^2}{N_2})^2/(N_2 - 1)}$$
+
 ```{r}
 
 t <- (44500 - 38500) / (sqrt((5400^2/29) + (4600^2/21)))
+dof <- (((5400^2 / 29) + (4600^2/21))^2) / (((((5400^2 / 29))^2) / (29-1)) +  ((((4600^2 / 21))^2) / (21-1)))
 
-# what is the degrees of freedom??
-2*pt(t, df = 49, lower.tail = FALSE)
+2*pt(t, df = dof, lower.tail = FALSE)
 
 ```
 
@@ -114,7 +121,7 @@ nes %>%
 
 t.test(rep_therm ~ south, data = nes)
 ```
-We reject the null hypothesis that there is no difference in feelings toward Republicans between Southerners and non-Southerners.
+We reject the null hypothesis that there is no difference in feelings toward Republicans between Southerners and non-Southerners at the $\alpha = .05$ level, but not at the $\alpha = .01$ level.
 
 ### Part B
 ```{r}
@@ -122,11 +129,11 @@ t.test(rep_therm ~ south, data = nes, subset = white == 1)
 t.test(rep_therm ~ south, data = nes, subset = white != 1)
 ```
 
-Among whites, we reject the null hypothesis that there is no difference in feelings toward the Republican party between Southerners and non-Southerners. We fail to reject that same null hypothesis among non-whites.
+Among whites, we reject the null hypothesis that there is no difference in feelings toward the Republican party between Southerners and non-Southerners $\alpha = .05$ and $\alpha = .01$ levels. We fail to reject that same null hypothesis among non-whites at the $\alpha = .05$ level
 
 ## Problem 4
 
-Download dataset
+Download dataset:
 
 ```{r}
 pakistan <- read_xlsx("pakistan.xlsx", sheet = "final")
@@ -139,11 +146,22 @@ pakistan$ln_hhincome = log(pakistan$hhincome)
 
 ### Part A
 
-The null hypothesis, or $H_0$, is that the average log-household income for Pakistani households is log-38,000 Pakistani Rupees/year. The alternative Hypothesis $H_1$, is that the average log-household income is different from log-38,000 in either direction. We are calculating the one sample t-test.
+The null hypothesis, or $H_0$, is that the average log-household income for Pakistani households is log-38,000 Pakistani Rupees/year. The alternative Hypothesis $H_1$, is that the average log-household income is different from log-38,000 in either direction. We are calculating the one sample t-test. Put symbolically
+
+$$H_0: ln(\mu) = ln(38,000)$$
+$$H_1: ln(\mu) \neq ln(38,000)$$
+
+So we need to define a test statistic:
+$$t = \frac{\bar x - \mu}{s/\sqrt n}$$
+$$t = \frac{ln(\bar x) - ln(38000)}{s/\sqrt12}$$
+```{r}
+(mean(pakistan$ln_hhincome) - log(38000))/(sd(pakistan$ln_hhincome)/sqrt(12))
+```
+
 
 ### Part B
 
-Hypothesis testing of means relies on the central limit theorem to calculate z-scores, which would not be achieved with a sample size of 12. 
+It is important that we assume that the natural log of income is distributed normally in order to conduct a hypothesis test of the sample mean with a sample size of 12. We do not know the population variance, $\sigma$, of income. In that situation, with a small sample, if the DGP was not normal, we could not construct a distribution in order to conduct a hypothesis test. We simply would not have enough information. However, with a small sample, if we assume normality, we can use the t distribution in order to conduct a hypothesis test. Assuming the null hypothesis is true, the test statistic should be a t-distribution centered at log(38,000)
 
 ### Part C
 
@@ -151,4 +169,4 @@ Hypothesis testing of means relies on the central limit theorem to calculate z-s
 t.test(pakistan$ln_hhincome, mu = log(38000))
 ```
 
-This test shows that we reject the null hypothesis.
+This test shows that we reject the null hypothesis that the log mean of household income in Pakistan is equal to log(38,000) at the $\alpha = .05$ level.
