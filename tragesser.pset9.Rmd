@@ -1,0 +1,179 @@
+---
+title: "Problem Set 9"
+author: "Connor Tragesser"
+date: "2023-10-28"
+output:
+  pdf_document: default
+  html_document:
+    df_print: paged
+---
+
+Begin by preparing the environment. The working directory needs to be set where your data will be available (meaning, you will need to change this for your computer), and the packages that are necessary for this exercise need to be loaded from the library (this assumes they are already installed). I'm also clearing the environment before beginning.
+
+```{r setup}
+library(foreign)
+library(tidyverse)
+library(modelsummary)
+library(formatR)
+library(data.table)
+library(readxl)
+library(stargazer)
+library(kableExtra)
+library(gmodels)
+library(stargazer)
+library(gtsummary)
+library(gt)
+library(flextable)
+knitr::opts_chunk$set(tidy.opts = list(width.cutoff = 60), tidy = TRUE)
+knitr::opts_chunk$set(echo = TRUE)
+
+knitr::opts_knit$set(root.dir = "/Users/connortragesser/Documents/Political Science Coursework Readings/Quant 1/Problem Set 9/")
+
+getwd()
+rm(list = ls()) 
+
+set.seed(2453)
+
+```
+
+## Problem 1
+
+### Part A
+
+The expectation is $$\frac{row\;total \times column\;total}{total\;sample\;size}$$
+
+### Part B
+
+The marginal distribution is simply (200,200)?
+
+## Problem 2
+
+### Gailmard 8.4
+
+$$H_0: \lambda = 3$$
+$$H_1: \lambda > 3$$
+
+$$observed = 5$$
+
+```{r}
+ppois(5, lambda = 3, lower.tail = FALSE)
+```
+
+
+### Gailmard 8.5
+
+Develop DGP first
+
+```{r}
+lamda_dist <- rpois(40, lambda = 5)
+```
+
+### Part A
+```{r}
+t.test(lamda_dist, mu = 5)
+```
+This test fails to reject the null hypothesis that the mean of the sample distribution is equal to 5 at the $\alpha = 0.05$ level.
+
+
+### Part B
+```{r}
+t.test(lamda_dist, mu = 8)
+```
+This test rejects the null hypothesis that the mean of the sample distribution is equal to 8 $\alpha = 0.05$ level.
+
+## Problem 3
+
+Load dataset 
+
+```{r}
+culture <- read.dta("apsrfinaldata.dta")
+head(culture)
+```
+
+
+### Part A
+
+```{r}
+reg_model_culture <- lm(pg ~ betweenstd + lngdpstd, data = culture)
+summary(reg_model_culture)
+modelsummary(reg_model_culture, stars = TRUE)
+```
+```{r, results='asis'}
+stargazer(reg_model_culture)
+```
+
+
+### Part B
+
+The standard error for the betweenstd coefficient is .075 and the standard error for the lngdpstd coefficient is .075. Some rounding is done here.
+
+### Part C
+
+The reported t-statistics are calculated as a test for whether the observed coefficients are significantly different from 0. Under the bull hypothesis, the true beta coefficient that we do not observe equals 0, or $H_0: \beta = 0$, while our alternative hypothesis is $H_0: \beta \neq 0$. The test statistic is calculated like so, for each coefficient respectively:
+
+$$T = \frac{\hat\beta - 0}{\hat {se}[\hat\beta_1]}$$
+
+The t-stat for betweenstd is -3.036 and its p-value is 0.00406. This means that we reject the null hypothesis that $\beta = 0$, based on the observed beta coefficient, $\hat\beta$, and its standard error. For lngdpstd, the t-stat is 10.633 and the p-value is .00000000000013. This also means that we reject the null hypothesis that $\beta = 0$, based on the observed beta coefficient, $\hat\beta$, and its standard error.
+
+## Problem 4
+
+Loading the data 
+
+```{r}
+mar <- read.dta("MAR_2006.dta")
+head(mar)
+```
+
+### Part A
+
+```{r}
+
+mar <- mar %>% 
+  mutate(POLGR_str = ifelse(POLGR == 0, str_c("No political", "grievances expressed", sep = "\n"), 
+                            ifelse(POLGR == 1, str_c("Political grievances focused on", "ending discrimination", sep = "\n"),
+                                   ifelse(POLGR == 2, str_c("Political grievances focused on", "creating or strengthening", "remedial policies", sep = "\n"),
+                                          ifelse(POLGR == 3, str_c("Political grievances focused on", "creating or strengthening", "autonomous status", sep = "\n"),
+ifelse(POLGR == 4, str_c("Political grievances focused on", "creating separate state for group", "or revanchist change in borders", sep = "\n"), "")))))) %>% 
+  mutate(EXECREP_str = ifelse(EXECREP == 0, str_c("No group representation", "in cental government", sep = "\n"), str_c("Group representation", "in cental government", sep = "\n"))) %>% 
+  mutate(GROUPCON_str = ifelse(GROUPCON == 0, "Widely dispersed", 
+                                ifelse(GROUPCON == 1, "Primarily urban or minority in one region",
+                                       ifelse(GROUPCON == 2, "Majority in one region, others dispersed",
+                                              ifelse(GROUPCON == 3, "Concentrated in one region", "")))))
+
+
+mar$POLGR_str <- factor(mar$POLGR_str, levels = unique(mar$POLGR_str[order(mar$POLGR)]), ordered = TRUE)
+mar$EXECREP_str <- factor(mar$EXECREP_str, levels = unique(mar$EXECREP_str[order(mar$EXECREP)]), ordered = TRUE)
+mar$GROUPCON_str <- factor(mar$GROUPCON_str, levels = unique(mar$GROUPCON_str[order(mar$GROUPCON)]), ordered = TRUE)
+
+
+bar_chart_maker <- function(var, title, xlabel) {
+  ggplot(aes(x = {{var}}), data = mar) +
+    geom_bar() +
+    theme_bw() +
+    ggtitle(title) +
+    scale_x_discrete(labels = function(x) str_wrap(x, width = 10)) +
+    xlab(xlabel) +
+    ylab("Count")
+}
+
+bar_chart_maker(POLGR_str, "Group Political Grievance", "Group Political Grievance")
+bar_chart_maker(EXECREP_str, "Group Representation in Executive Branch of Central Government", "Group Representation in Executive Branch of Central Government")
+bar_chart_maker(GROUPCON_str, "Group Geographical Concentration", "Group Geographical Concentration")
+
+```
+
+### Part B
+
+```{r}
+
+chisq.test(x = mar$EXECREP, y = mar$POLGR)
+
+z <- mar %>% 
+  select(POLGR_str, EXECREP_str) %>% 
+  tbl_cross(percent = "column", label = list(POLGR_str ~ "Group Political Grievance",
+                                             EXECREP_str ~ "Group Rep in Executive Branch")) %>%
+  as_flex_table(width = 10)
+z
+
+```
+
