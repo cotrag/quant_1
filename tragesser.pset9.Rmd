@@ -20,6 +20,7 @@ library(gmodels)
 library(gtsummary)
 library(gt)
 library(flextable)
+library(kableExtra)
 knitr::opts_chunk$set(tidy.opts = list(width.cutoff = 60), tidy = TRUE)
 knitr::opts_chunk$set(echo = TRUE)
 
@@ -170,7 +171,15 @@ z <- mar %>%
   as_flex_table(width = 10)
 z
 
+mar %>% 
+  group_by(EXECREP_str) %>% 
+  summarise(num = n()) %>% 
+  mutate(prop = num/sum(num)) %>% 
+  kable()
+
 ```
 
-ADD ANOTHER TABLE WHERE THE OBSERVATIONS OF EACH ROW/COLUMN WERE DEFINED BY THE GLOBAL
+
+
+
 
