@@ -2,11 +2,10 @@
 title: "Problem Set 9"
 author: "Connor Tragesser"
 date: "2023-10-28"
-output:
-  pdf_document: default
-  html_document:
-    df_print: paged
+output: pdf_document
 ---
+
+Discussed with Alice Moon, Ryo Sawayama, SoYun Chang, Jae Eun Jun, Jinglong Guo, Edward Howe, and Jae Chang. 
 
 Begin by preparing the environment. The working directory needs to be set where your data will be available (meaning, you will need to change this for your computer), and the packages that are necessary for this exercise need to be loaded from the library (this assumes they are already installed). I'm also clearing the environment before beginning.
 
@@ -17,10 +16,7 @@ library(modelsummary)
 library(formatR)
 library(data.table)
 library(readxl)
-library(stargazer)
-library(kableExtra)
 library(gmodels)
-library(stargazer)
 library(gtsummary)
 library(gt)
 library(flextable)
@@ -44,11 +40,13 @@ The expectation is $$\frac{row\;total \times column\;total}{total\;sample\;size}
 
 ### Part B
 
-The marginal distribution is simply (200,200)?
+The marginal distribution is simply (200,200).
 
 ## Problem 2
 
 ### Gailmard 8.4
+
+We have a an observation of 5 taken from a poisson distribution. We want to test whether the poisson distribution it was taken from has $\lambda = 3$.  
 
 $$H_0: \lambda = 3$$
 $$H_1: \lambda > 3$$
@@ -59,6 +57,7 @@ $$observed = 5$$
 ppois(5, lambda = 3, lower.tail = FALSE)
 ```
 
+We fail to reject the null hypothesis that the distribution has $\lambda = 3$. 
 
 ### Gailmard 8.5
 
@@ -98,10 +97,6 @@ reg_model_culture <- lm(pg ~ betweenstd + lngdpstd, data = culture)
 summary(reg_model_culture)
 modelsummary(reg_model_culture, stars = TRUE)
 ```
-```{r, results='asis'}
-stargazer(reg_model_culture)
-```
-
 
 ### Part B
 
@@ -170,10 +165,12 @@ chisq.test(x = mar$EXECREP, y = mar$POLGR)
 
 z <- mar %>% 
   select(POLGR_str, EXECREP_str) %>% 
-  tbl_cross(percent = "column", label = list(POLGR_str ~ "Group Political Grievance",
+  tbl_cross(percent = "row", label = list(POLGR_str ~ "Group Political Grievance",
                                              EXECREP_str ~ "Group Rep in Executive Branch")) %>%
   as_flex_table(width = 10)
 z
 
 ```
+
+ADD ANOTHER TABLE WHERE THE OBSERVATIONS OF EACH ROW/COLUMN WERE DEFINED BY THE GLOBAL
 
