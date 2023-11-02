@@ -93,12 +93,15 @@ head(culture)
 
 ### Part A
 
-The table shows that a one unit increase in between gorup inequality is associated with an average decrease of .228 in public goods, holding the standardized values of the natural logarithm of GDP per capita equal. Similarly it shows that a one unit increase in the standardized values of the natural logarithm of GDP per capita is associated with an average increase of .800 in public goods holding between gorup inequality equal. 
+The table shows that a one unit increase in between group inequality is associated with an average decrease of .228 in public goods, holding the standardized values of the natural logarithm of GDP per capita equal. Similarly it shows that a one unit increase in the standardized values of the natural logarithm of GDP per capita is associated with an average increase of .800 in public goods holding between gorup inequality equal. 
 
 ```{r}
 reg_model_culture <- lm(pg ~ betweenstd + lngdpstd, data = culture)
 summary(reg_model_culture)
-modelsummary(reg_model_culture, stars = TRUE)
+
+mapper = list("betweenstd" = "between group inequality", "lngdpstd" = "stnd. value of the log of PCGDP")
+
+modelsummary(reg_model_culture, stars = TRUE,  coef_map = mapper)
 ```
 
 ### Part B
