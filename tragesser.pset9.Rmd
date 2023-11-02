@@ -79,7 +79,7 @@ This test fails to reject the null hypothesis that the mean of the sample distri
 ```{r}
 t.test(lamda_dist, mu = 8)
 ```
-This test rejects the null hypothesis that the mean of the sample distribution is equal to 8 $\alpha = 0.05$ level.
+This test rejects the null hypothesis that the mean of the sample distribution is equal to 8 at the $\alpha = 0.05$ level.
 
 ## Problem 3
 
@@ -92,6 +92,8 @@ head(culture)
 
 
 ### Part A
+
+The table shows that a one unit increase in between gorup inequality is associated with an average decrease of .228 in public goods, holding the standardized values of the natural logarithm of GDP per capita equal. Similarly it shows that a one unit increase in the standardized values of the natural logarithm of GDP per capita is associated with an average increase of .800 in public goods holding between gorup inequality equal. 
 
 ```{r}
 reg_model_culture <- lm(pg ~ betweenstd + lngdpstd, data = culture)
@@ -130,7 +132,7 @@ mar <- mar %>%
                                    ifelse(POLGR == 2, str_c("Political grievances focused on", "creating or strengthening", "remedial policies", sep = "\n"),
                                           ifelse(POLGR == 3, str_c("Political grievances focused on", "creating or strengthening", "autonomous status", sep = "\n"),
 ifelse(POLGR == 4, str_c("Political grievances focused on", "creating separate state for group", "or revanchist change in borders", sep = "\n"), "")))))) %>% 
-  mutate(EXECREP_str = ifelse(EXECREP == 0, str_c("No group representation", "in cental government", sep = "\n"), str_c("Group representation", "in cental government", sep = "\n"))) %>% 
+  mutate(EXECREP_str = ifelse(EXECREP == 0, str_c("No group representation", "in central government", sep = "\n"), str_c("Group representation", "in central government", sep = "\n"))) %>% 
   mutate(GROUPCON_str = ifelse(GROUPCON == 0, "Widely dispersed", 
                                 ifelse(GROUPCON == 1, "Primarily urban or minority in one region",
                                        ifelse(GROUPCON == 2, "Majority in one region, others dispersed",
@@ -160,22 +162,35 @@ bar_chart_maker(GROUPCON_str, "Group Geographical Concentration", "Group Geograp
 
 ### Part B
 
+The chi squared test allows us to test whether the distributions of subgroups match expectations based on the whole, as in $\frac{row\;total \times column\;total}{table\;total}$. Effectively, it is a test of independence between two variables. The chi squared test allows us to reject the null hypothesis of independence at the $\alpha = .05$ level. Given the clean empirical frequency/proportion table, this makes sense. At the total level, 59% of observations have "No group representation in central government" while 41% of observations have "Group representation in central government". When looking at some of the subgroups of political grievance, however, this distributions change drastically, from 45% and 55% for the lowest level of conflict, to 73% and 27% for the highest. The dirty theoretical table is the expected number of cases found in each political representation group if the two variables in question were completely independent As you can see, it looks very different from the empirical table. 
+
 ```{r}
 
 chisq.test(x = mar$EXECREP, y = mar$POLGR)
 
-z <- mar %>% 
+freq_table <- mar %>% 
   select(POLGR_str, EXECREP_str) %>% 
   tbl_cross(percent = "row", label = list(POLGR_str ~ "Group Political Grievance",
                                              EXECREP_str ~ "Group Rep in Executive Branch")) %>%
   as_flex_table(width = 10)
-z
+freq_table
 
-mar %>% 
-  group_by(EXECREP_str) %>% 
+props <- mar %>% 
+  group_by(EXECREP) %>% 
   summarise(num = n()) %>% 
   mutate(prop = num/sum(num)) %>% 
-  kable()
+  select(EXECREP, prop) %>% 
+  spread(EXECREP, prop) 
+
+exp_table <- mar %>% 
+  group_by(POLGR_str) %>% 
+  summarise(total_no_rep = n()) %>% 
+  mutate(total_with_rep = total_no_rep)
+
+exp_table$total_no_rep = exp_table$total_no_rep * props$`0`
+exp_table$total_with_rep = exp_table$total_with_rep * props$`1`
+exp_table$total = exp_table$total_no_rep + exp_table$total_with_rep
+exp_table
 
 ```
 
