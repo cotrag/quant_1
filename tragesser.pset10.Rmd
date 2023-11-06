@@ -1,0 +1,124 @@
+---
+title: "Problem Set 10"
+author: "Connor Tragesser"
+date: "2023-11-09"
+output: html_document
+---
+
+Begin by preparing the environment. The working directory needs to be set where your data will be available (meaning, you will need to change this for your computer), and the packages that are necessary for this exercise need to be loaded from the library (this assumes they are already installed). I'm also clearing the environment before beginning.
+
+```{r setup}
+library(foreign)
+library(tidyverse)
+library(modelsummary)
+library(formatR)
+library(data.table)
+library(readxl)
+library(gmodels)
+library(gtsummary)
+library(gt)
+library(flextable)
+library(kableExtra)
+knitr::opts_chunk$set(tidy.opts = list(width.cutoff = 60), tidy = TRUE)
+knitr::opts_chunk$set(echo = TRUE)
+
+knitr::opts_knit$set(root.dir = "/Users/connortragesser/Documents/Political Science Coursework Readings/Quant 1/Problem Set 10/")
+
+getwd()
+rm(list = ls()) 
+
+set.seed(2453)
+
+```
+
+## Gailmard 9.1
+
+### Part A
+
+We need to use a hypothesis test for proportions. The null hypothesis is that $\pi = .5$. We observed $\pi = .51$
+
+```{r}
+z = (.51-.5) / ((.5*.5) / 625)^(1/2)
+1 - pnorm(z)
+
+```
+
+This test allows us to fail to reject the null hypothesis 50% of the population (American adults) believe that economic growth should have a higher priority than environmental protection at the $\alpha = 0.05$ level.
+
+### Part B
+
+No I did not need to bootstrap the standard error?
+
+### Part C
+
+Confidence intervals are calculated using Z-scores. At the 95% level, it would be in the range $-1.96 \le z \le 1.96$, finding the values that get tose z-scores, and calculating the distance. 
+
+$$-1.96 = \frac{H_1 - .5}{\sqrt{\frac{.5(1-.5)}{625}}}$$
+Therefore,
+
+$$H_1 = -1.96 \times \sqrt{\frac{.5(1-.5)}{625}} - .5$$
+And the other direction would replace $-1.96$ with $1.96$
+
+```{r}
+
+lower_bound = -1.96 * ((.5*.5) / 625)^(1/2) - .5
+upper_bound =  1.96 * ((.5*.5) / 625)^(1/2) - .5
+
+moe = ((upper_bound - lower_bound)/2)*100
+
+moe
+```
+
+The margin of error for this poll is 3.92%
+
+## Gailmard 9.2
+
+Putting some proportions together first
+
+```{r}
+prop_men_dem = 90/220
+n_men = 220
+prop_women_dem = 145/243
+n_women = 243
+```
+
+
+### Part A
+
+For each of men and women, we need to ask ourselves, "what proportions would give me a z-score of -1.96 and 1.96, assuming the null is that the proportion is 50%?"
+
+```{r}
+lower_bound_men = (-1.96 * ((.5*.5) / n_men)^(1/2))
+upper_bound_men =  1.96 * ((.5*.5) / n_men)^(1/2)
+
+lower_bound_women = -1.96 * ((.5*.5) / n_women)^(1/2)
+upper_bound_women =  1.96 * ((.5*.5) / n_women)^(1/2)
+
+paste("The CI for men is", lower_bound_men, "to", upper_bound_men)
+paste("The CI for women is", lower_bound_women, "to", upper_bound_women)s
+
+```
+
+
+### Part B
+
+```{r}
+z_women = (prop_women_dem-.5) / ((.5*.5) / n_women)^(1/2)
+z_men = (prop_men_dem-.5) / ((.5*.5) / n_men)^(1/2)
+
+1 - pnorm(z_women)
+pnorm(z_men)
+
+```
+
+
+### Part C
+
+## Gailmard 9.3
+
+It is *not* true that two variables that have overlapping 95% confidence intervals are not significantly different. To say that two variables are not significantly different, the *mean* of each variable has to fall within the the 95% confidence interval of the other. If this is not the case, it is possible that the 95% confidence interval for their difference does not include 0.  
+
+## Gailmard 9.4
+
+
+
