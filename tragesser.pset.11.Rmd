@@ -1,0 +1,241 @@
+---
+title: "Problem Set 11"
+author: "Connor Tragesser"
+date: "2023-11-16"
+output: pdf_document
+editor_options: 
+  markdown: 
+    wrap: 72
+---
+
+Discussed with SoYun Chang, Cece Kenney, Kristen Adams, Jae Chang, Alice Moon, Jae Eun Jun, and Jinglong Guo
+
+Begin by preparing the environment. The working directory needs to be set where your data will be available (meaning, you will need to change this for your computer), and the packages that are necessary for this exercise need to be loaded from the library (this assumes they are already installed). I'm also clearing the environment before beginning.
+
+```{r setup}
+library(foreign)
+library(tidyverse)
+library(modelsummary)
+library(formatR)
+library(data.table)
+library(readxl)
+library(scales)
+knitr::opts_chunk$set(tidy.opts = list(width.cutoff = 60), tidy = TRUE)
+knitr::opts_chunk$set(echo = TRUE)
+
+knitr::opts_knit$set(root.dir = "/Users/connortragesser/Documents/Political Science Coursework Readings/Quant 1/Problem Set 11/")
+
+getwd()
+rm(list = ls()) 
+
+set.seed(12345)
+
+```
+
+## Problem 1
+
+### Gailmard 9.5
+
+### Part A
+
+Likelihoods are probabilities at each point of a probability distribution. They are fractions, so they are negative when logged.
+
+### Part B
+The theoretical restriction is that the 2 independent variables in question, "own share" and "disagreement value", have equal magnitudes in opposite directions. So, the null and alternative hypotheses would be:
+
+$$H_0: \beta_{own\;share} + \beta_{disagreement\;value} = 0$$ $$H_1: \beta_{own\;share} + \beta_{disagreement\;value} \neq 0$$
+
+
+### Part C
+
+Without knowing anything else, the theoretical restriction does not seem reasonable in light of the results. The log likelihood became worse after the restriction, lowering from -720 to -759. We need to run a likelihood ratio test, Mathematically:
+
+$$-2[l(\theta_0|(x)) - l(\theta_{MLE}|(x))]$$
+$$-2[l_{unrestricted}- l_{restricted}]$$ $$-2[-759 - -720]$$ $$78$$
+
+It is also known that this parameter follows the $\chi^2$ distribution, making a restriction expands the degrees of freedom. The degrees of freedom for the test distribution is $3-2=1$
+
+```{r}
+pchisq(78, 1, lower.tail = FALSE)
+```
+
+Which yields a p-value that allows us to reject the null hypothesis at the .05 level. The null hypothesis is that the effects of the two variables are the same, in different directions, which is the theoretical restriction. We have sufficient evidence to reject it.
+
+### Gailmard 9.6
+
+The theoretical restriction is that $\theta \ge 0$. Without the restriction of $\theta \ge 0$, the MLE of $\theta$ is simply $\theta$, because the mean of a normal distribution is the most likely value of it. With the constraint, the MLE is either 0 or theta, whichever is the maximum. If the normal distribution is maximized, using a first order derivative, at $\theta < 0$, the distribution would be downward sloping from there. each successive increase decreases the probability of observing the value. The normal distribution is single peaked and monotonically changes on either side of the peak. Thus, it would be maximized at 0.
+
+Formally, with the constraint: $$MLE = max(\theta, 0)$$ Without the constraint: $$MLE = \theta$$
+
+### Gailmard 9.8
+
+### Part A
+
+\begin{equation}
+  p(y) =
+    \begin{cases}
+      $p$ & \text{if $y = 1$}\\
+      $1-p$ & \text{if $y = 0$}\\
+    \end{cases}       
+\end{equation}
+
+Therefore, when $y = 0: p^0(1-p)^1 = 1-p$ and when $y = 0: p^1(1-p)^0 = p$, 
+
+So, written together:
+
+$$f(y|p) = p^y(1-p)^{(1-y)}$$
+
+### Part B
+
+It is known:
+
+$$Pr(X = x) = Pr(X_1 = x_1) \times Pr(X_2 = x_2) \times Pr(X_3 = x_3) \times ... Pr(X_n = x_n)$$
+
+Substitution the functional form above: 
+
+$$Pr(X = x) = p^{x_1}(1-p)^{1 - x_1} \times p^{x_2}(1-p)^{1 - x_2} \times p^{x_3}(1-p)^{1 - x_3} \times ... p^{x_n}(1-p)^{1 - x_n}$$
+
+Which can be rewritten as:
+
+$$L(p) = \prod_{i=1}^nPr(x_i|p) = \prod_{i=1}^np^{x_i}(1-p)^{1-x_i}$$
+
+Standing alone:
+
+$$= \prod_{i=1}^np^{x_i}(1-p)^{1-x_i}$$
+Apply the product rule
+
+$$= \prod_{i=1}^np^{x_i} \times \prod_{i=1}^n(1-p)^{1-x_i}$$
+Taking out the constant multiplier and applying the multiplication of exponents rule (i.e., multiplication of 2 numbers with the same base is the base raised to the addition of the exponents):
+
+$$= p^{\sum_{i = 1}^nx_i} \times (1-p)^{\sum_{i = 1}^n(1-x_i)}$$
+
+### Part C
+Write the likelihood function first
+$$L(p) = p^{\sum_{i = 1}^nx_i} \times (1-p)^{\sum_{i = 1}^n(1-x_i)}$$
+
+Can remove the bounds, because they always contain the same dimensions:
+
+$$L(p) = p^{\sum x_i} \times (1-p)^{\sum (1-x_i)}$$
+
+Apply log:
+$$\mathcal{L}(p) = log(p^{\sum x_i} \times (1-p)^{\sum (1-x_i)})$$
+
+Rule of logs: multiplication within a log can be split into the addition of the log of each part:
+
+$$\mathcal{L}(p) = log(p^{\sum x_i}) + log((1-p)^{\sum (1-x_i)})$$
+Distribution the sum through where possible:
+
+$$\mathcal{L}(p) = log(p^{\sum x_i}) + log((1-p)^{(N - \sum x_i)})$$
+
+Apply rule of logs that says that the log of a number raised to an exponent is that exponent times the log of the base:
+
+$$\mathcal{L}(p) = ({\sum x_i} \times log(p)) + ((N - \sum x_i) \times log(1-p))$$
+
+### Part D
+Need to take the derivative with respect to p, and maximize the first oder condition, i.e. set it equal to 0.
+
+$$\frac{\delta}{\delta p} \mathcal{L}(p|x) = \frac{\delta}{\delta p} (({\sum x_i} \times log(p)) + ((N - \sum x_i) \times log(1-p)))$$
+
+Note: $\sum x_i$ and $N$ are constants, so can be pulled form derivative calculation
+
+$$\frac{\delta}{\delta p} \mathcal{L}(p|x) = ({\sum x_i} \times \frac{\delta}{\delta p} log(p)) + ((N - \sum x_i) \times \frac{\delta}{\delta p}log(1-p))$$
+
+Apply derivative of logs rule and chain rule:
+
+$$\frac{\delta}{\delta p} \mathcal{L}(p|x) = ({\sum x_i} \times \frac{1}{p}) + ((N - \sum x_i) \times \frac{1}{1-p} \times (-1))$$
+Maximize by setting the right side equal to 0, and distribute the negative 1
+$$0 = ({\sum x_i} \times \frac{1}{p}) - ((N - \sum x_i) \times \frac{1}{1-p})$$
+Get like terms in the denominator
+
+$$0 = \frac{\sum x_i \times (1-p)}{p(1-p)} - \frac{(N - \sum x_i) \times p}{p(1-p)}$$
+
+the denominators are a linear scale that affect both parts of the right hand side the same, and cannot affect the left hand side, so they can be dropped
+
+$$0 = \sum x_i \times (1-p) - p \times (N - \sum x_i)$$
+Distribute:
+$$0 = (\sum x_i - p\sum x_i) - (Np - p\sum x_i)$$
+Distribute the negative:
+$$0 = \sum x_i - p\sum x_i - Np + p\sum x_i$$
+Reduce:
+$$0 = \sum x_i - Np$$
+Solve for P with basic algebra:
+$$p = \frac{\sum x_i}{N} = \bar x$$
+We only have 1 first order condition, so it must be the max. This is also known because the Bernoulli is single peaked.
+
+## Problem 2
+
+Download the dataset
+
+```{r}
+subprime <- read.dta("subprime.dta")
+head(subprime)
+```
+
+### Part A
+
+```{r}
+
+num_subprime <- subprime %>% 
+  filter(high_rate == 1)
+
+true_subprime_rate = nrow(num_subprime)/nrow(subprime)
+
+graph_data = subprime
+graph_data$high_rate = as.factor(graph_data$high_rate)
+
+graph_data <- graph_data %>% 
+  mutate(high_rate_str = ifelse(high_rate == 1, "Subprime", "Prime"))
+
+ggplot(aes(x= high_rate_str), data = graph_data) +
+  geom_bar(aes(y = (after_stat(count))/sum(after_stat(count))), 
+           fill = "cadetblue") +
+  scale_y_continuous(labels=percent) +
+  theme_bw() +
+  ylab("Count") +
+  xlab("Borrower Status") +
+  ggtitle("Proportion of Prime/Subprime Borrowers in Cape Coral and Fort Meyers")
+
+```
+
+### Part B
+
+```{r}
+sample_subprime <- sample_n(subprime, 250)
+
+sample_num_subprime <- sample_subprime %>% 
+  filter(high_rate == 1)
+
+sample_prop_subprime <- nrow(sample_num_subprime) / nrow(sample_subprime)
+
+ci_maker <- function(prop, n, z, level) {
+  lower_bound = -z * sqrt((prop * (1 - prop))/ n)
+  upper_bound = z * sqrt((prop * (1 - prop))/ n)
+  paste("The CI is ", 100 * round(prop + lower_bound, 4), "% to ", 
+        100 * round(prop + upper_bound, 4), "% at the ", 
+        level, " level", sep = "")
+}
+
+ci_maker(sample_prop_subprime, nrow(sample_subprime), 0.674, "50%")
+ci_maker(sample_prop_subprime, nrow(sample_subprime), 1.96, "95%")
+ci_maker(sample_prop_subprime, nrow(sample_subprime), 2.576, "99%")
+```
+
+### Part C
+
+SECTION 1
+
+The sample proportion that was found is not necessarily the population proportion. There is uncertainty surrounding it, especially given that it is only one sample that is drawn. A useful way of understanding this uncertainty is building a confidence interval around the sample proportion. A confidence interval builds a range of values that can be thought of as, "upon many draws from the population, the proportion of subprime borrowers will fall in this range x% of times" where the % is derived from the confidence level. Thus, a higher confidence level will yield a larger range for the confidence interval. It takes a wider set of values to say "99% of draws will have a proportion that falls in this range" than "50% of draws will have a proportion that falls in this range".
+
+SECTION 2
+
+```{r}
+
+lower_bound = -1.96 * sqrt((sample_prop_subprime * (1 - sample_prop_subprime))/
+                             nrow(sample_subprime))
+upper_bound = 1.96 * sqrt((sample_prop_subprime * (1 - sample_prop_subprime))/
+                            nrow(sample_subprime))
+paste("The margin of error, based on the 95% confidence level, is: ", 
+      round(100 * (((sample_prop_subprime + upper_bound) - 
+                      (sample_prop_subprime + lower_bound))/2), 3)
+      , "%", sep = "")
+```
