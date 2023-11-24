@@ -1,0 +1,190 @@
+---
+title: "Problem Set 12"
+author: "Connor Tragesser"
+date: "2023-11-24"
+output: pdf_document
+---
+
+Discussed with SoYun Chang, Jinglong Guo, Kristen Adams, Cece Kenney, Ryo Sawayama, and Jae Chang. 
+
+Begin by preparing the environment. The working directory needs to be set where your data will be available (meaning, you will need to change this for your computer), and the packages that are necessary for this exercise need to be loaded from the library (this assumes they are already installed). I'm also clearing the environment before beginning.
+
+```{r setup}
+pacman::p_load("foreign", "tidyverse", "modelsummary", "formatR", "data.table", "readxl", "scales", "lmtest", "sandwich", "kableExtra", "gmodels", "gtsummary", "stargazer", "car", "broom", "Hmisc")
+
+
+knitr::opts_chunk$set(tidy.opts = list(width.cutoff = 60), tidy = TRUE)
+knitr::opts_chunk$set(echo = TRUE)
+
+knitr::opts_knit$set(root.dir = "/Users/connortragesser/Documents/Political Science Coursework Readings/Quant 1/Problem Set 12/")
+
+getwd()
+rm(list = ls()) 
+
+set.seed(413947)
+
+```
+
+
+## Problem 1
+
+Load Dataset:
+```{r}
+fish_data <- read.dta("fishData.dta")
+head(fish_data)
+
+```
+
+
+### Part A
+
+```{r, results='asis'}
+
+model <- lm(fhrev ~ muslim + income + opec, data = fish_data)
+correct_ses <- coeftest(model, vcov = vcovHC(model, type="HC0"))
+stargazer(correct_ses, covariate.labels = c("Muslim", "log GDP Per Capita", "OPEC Membership"), dep.var.labels = "Freedom House Scores", type = "latex")
+```
+
+Each of this model's coefficients are statistically significant past the 1% model. It indicates that a country being muslim has an decrease in freedom house score of 1.347, holding all else equal. It also says a 1% increase in GDP per capita leads to an average increase of .015 in freedom house score, holding all else equal. It also says that OPEC membership decreases freedom house membership by 1.508, holding all else equal.
+
+### Part B
+
+```{r, results = 'asis'}
+model_int <- lm(fhrev ~ muslim * income + opec, data = fish_data)
+stargazer(model_int, covariate.labels = c("Muslim", "log GDP Per Capita", "OPEC Membership", "Muslim:log GDP Per Capita"), dep.var.labels = "Freedom House Scores", type = "latex")
+```
+
+```{r}
+
+# Function that calculates mode
+Mode <- function(x) {
+  ux <- unique(x)
+  ux[which.max(tabulate(match(x, ux)))]
+}
+
+# gather point estimate for each value (used for graphing)
+muslim_coef = summary(model_int)$coefficients["muslim","Estimate"]
+intercept = summary(model_int)$coefficients["(Intercept)","Estimate"]
+opec_coef = summary(model_int)$coefficients["opec","Estimate"]
+interact_coef = summary(model_int)$coefficients["muslim:income","Estimate"]
+income_coef = summary(model_int)$coefficients["income","Estimate"]
+
+predicted_df <- data.frame(rev_pred = predict(model_int, fish_data), muslim = fish_data$muslim, 
+                           income = fish_data$income, opec = Mode(fish_data$opec))
+
+fish_data$muslim_lab = ifelse(fish_data$muslim == 1, "Muslim", "Not Muslim")
+
+mycolors = c("Muslim" = "tomato2", "Not Muslim"="deepskyblue3")
+  
+ggplot(aes(x = income, y = fhrev, color = factor(muslim_lab)), data = fish_data) +
+  geom_point() +
+  geom_abline(intercept = intercept + (opec_coef*Mode(fish_data$opec)), slope = income_coef, color = "deepskyblue3") +
+  geom_abline(intercept = intercept + (opec_coef*Mode(fish_data$opec)) + muslim_coef, 
+              slope = income_coef + interact_coef, color = "tomato2") +
+  scale_color_manual(values = mycolors) +
+  labs(color = "", x = "log GDP Per Capita", y = "Freedom House Scores")
+  
+```
+
+
+This graph shows that the interaction term is important in our interpretation. The relationship between GDP and Freedom is *different* between Muslim and non Muslim Countries. 
+
+## Problem 2
+
+### Part A
+
+```{r}
+qog <- read.dta("QoG_2010.dta")
+lif_exp <- read.csv("lifeexp.csv")
+
+joined_dataset <- left_join(qog, lif_exp, by = "cname")
+
+head(joined_dataset)
+
+ggplot(aes(x = undp_gdp, y = lifeexp), data = joined_dataset) +
+  geom_point() +
+  geom_smooth(method = lm, fullrange=TRUE) +
+  theme_bw() +
+  ylab("Life Expectancy") +
+  xlab("Gross domestic product (GDP) per capita")
+
+```
+
+
+### Part B
+
+The scatterplot above indicates that the effect of GDP on life expectancy is nonlinear. Rather, the relationship is very high at the beginning, and diminishes over time. This comports with expectations, where rising above poverty is very important in health outcomes, but additional wealth eventually diminishes in its improvement of health outcomes. 
+
+```{r, results ='asis'}
+model_exp_gdp <- lm(lifeexp ~  undp_gdp, data = joined_dataset)
+model_exp_gdp_quad <- lm(lifeexp ~  undp_gdp + I(undp_gdp^2), data = joined_dataset)
+
+pred_df <- data.frame(linear_pred = predict(model_exp_gdp, joined_dataset), quad_pred = predict(model_exp_gdp_quad, joined_dataset), gdp = joined_dataset$undp_gdp, exp_obs = joined_dataset$lifeexp)
+
+ggplot(aes(x = gdp), data = pred_df) +
+  geom_point(aes(y = exp_obs)) +
+  geom_line(aes(y = linear_pred, color = "Linear")) +
+  geom_line(aes(y = quad_pred, color = "Quadratic")) +
+  labs(x = "GDP Per Capita", y = "Life Expectancy") +
+  scale_color_manual(name = "Model Versions", values = c("Linear" = "tomato2", "Quadratic" = "deepskyblue3"))
+
+stargazer(model_exp_gdp, model_exp_gdp_quad, covariate.labels = c("GDP", "GDP Squared"), dep.var.labels = "Life Expectancy", type = "latex")
+```
+
+The coefficients for both of the GDP terms are statistically significant. They indicate that increases in GDP are associated with increases in life expectancy, but that the magnitude of these increases decreases as GDP rises. The coefficients are very small in magnitude because GDP has a very large range. The interpretation is in terms of a $1 change in GDP, which is minuscule in the range given. 
+
+### Part C
+
+The only coefficients that change between using the "free" dummy variable and the "unfree" dummy variable is the intercept and the "free"/"unfree" coefficient. The "free"/"unfree" coefficients are in exact opposite directions, which makes sense given they are mutually exclusive binary variables. In each of the two models, the only thing that changes is which group is captured by the model term or the intercept. In any case, the *effect* of being in a group on the outcome does not change, so the magnitude is the same but in opposite directions. The intercept is the starting point *for the out group of the controlled condition* so it changes slightly. When I attempt to include both controls in the model, R recognizes that including both would cause perfect multicollinearity, so it automatically drops one.
+
+
+```{r, results = 'asis'}
+joined_dataset <- joined_dataset %>% 
+  mutate(avg_rights = (fh_cl + fh_pr) / 2) %>% 
+  mutate(free = ifelse(avg_rights < 3, 1, 0)) %>% 
+  mutate(unfree = ifelse(avg_rights >= 3, 1, 0))
+
+# ensuring mutual exclusivity and that all observations are in either free or unfree group
+stopifnot(joined_dataset$free + joined_dataset$unfree == 1)
+
+fr_expanded_model_exp_gdp_quad <- lm(lifeexp ~  undp_gdp + I(undp_gdp^2) + undp_gini + free, data = joined_dataset)
+stargazer(fr_expanded_model_exp_gdp_quad, covariate.labels = c("GDP", "GDP Squared", "GINI Coeficient", "Free"), dep.var.labels = "Life Expectancy", type = "latex")
+
+unfr_expanded_model_exp_gdp_quad <- lm(lifeexp ~  undp_gdp + I(undp_gdp^2) + undp_gini + unfree, data = joined_dataset)
+stargazer(unfr_expanded_model_exp_gdp_quad, covariate.labels = c("GDP", "GDP Squared", "GINI Coeficient", "Unfree"), dep.var.labels = "Life Expectancy", type = "latex")
+
+both_expanded_model_exp_gdp_quad <- lm(lifeexp ~  undp_gdp + I(undp_gdp^2) + undp_gini + unfree + free, data = joined_dataset)
+stargazer(both_expanded_model_exp_gdp_quad, covariate.labels = c("GDP", "GDP Squared", "GINI Coeficient", "Unfree", "Free"), dep.var.labels = "Life Expectancy", type = "latex")
+
+```
+
+
+### Part D
+
+```{r}
+plot(fr_expanded_model_exp_gdp_quad)
+
+# testing for homoskedastcity null hypothesis is homoskedasticity:
+ncvTest(fr_expanded_model_exp_gdp_quad)
+
+# build a correlation table
+joined_dataset %>% 
+  mutate(gdpsq = undp_gdp^2) %>% 
+  select(c(gdpsq, undp_gdp, undp_gini, free)) %>% 
+  cor()
+
+```
+
+Plot 1, which plots residuals by fitted values, shows some possible heteroskedasticity. If the model was homoskedastic, the magnitude of residuals would not change as a function of fitted values. Instead, the residuals are high at the tails, and smaller in the middle. Plot 4 shows a possible issue of leverage for the 62nd observation, as measured by a Cook's distance greater than 1. The ncvTest function conducts a statistical test in which the null hypothesis is homoskedasticity in the model. The null hypothesis is rejected at the 1% level, indicating that the model is not homoskedastic. One can also check for multicollinearity by presenting the correlations between the different independent variables. Doing so, we find the only high in magnitude correlation coefficient to be between GDP and GDP^2, which is expected and not an issue. 
+
+### Part E
+
+```{r, results = 'asis'}
+fhstatus_model <- lm(lifeexp ~  undp_gdp + I(undp_gdp^2) + undp_gini + fh_status, data = joined_dataset)
+stargazer(fhstatus_model, covariate.labels = c("GDP", "GDP Squared", "Gini Coefficient", "Partly Free", "Not Free"), dep.var.labels = "Life Expectancy", type = "latex")
+
+```
+
+R understands that fh_status is a factor of 3 levels: "Free", "Not Free", and "Partly Free". If all 3 levels were included, there would be perfect multicollinearity and a model could not be estimated. Thus, R automatically removed one to serve as the reference group, in this case "free". 
+
+The coefficients of the fh_status variables are not statistically significant at the .05 level, so we cannot say with confidence that they are different than 0. Thus, we cannot say that, after controlling for the other independent variables that are controlled, a country's level of freedom measured by the freedom house is a significant explainer of life expectancy.
