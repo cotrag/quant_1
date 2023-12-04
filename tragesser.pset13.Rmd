@@ -1,0 +1,125 @@
+---
+title: "Problem Set 13"
+author: "Connor Tragesser"
+date: "`r Sys.Date()`"
+output: pdf_document
+---
+
+Discussed with SoYun Chang, Alice Moon, Kristen Adams, Jae Eun Jun, Jae Chang, Edward Howe, Jinglong Guo, and Ryo Sawayama
+
+Begin by preparing the environment. The working directory needs to be set where your data will be available (meaning, you will need to change this for your computer), and the packages that are necessary for this exercise need to be loaded from the library (this assumes they are already installed). I'm also clearing the environment before beginning.
+
+```{r setup}
+pacman::p_load("foreign", "tidyverse", "modelsummary", "formatR", "data.table", "readxl", "scales", "lmtest", "sandwich", "kableExtra", "gmodels", "gtsummary", "stargazer", "car", "broom", "Hmisc", "AER", "MatchIt", "rgenoud", "modelsummary", "Matching")
+
+knitr::opts_chunk$set(tidy.opts = list(width.cutoff = 60), tidy = TRUE)
+knitr::opts_chunk$set(echo = TRUE)
+
+knitr::opts_knit$set(root.dir = "/Users/connortragesser/Documents/Political Science Coursework Readings/Quant 1/Problem Set 13/")
+
+getwd()
+rm(list = ls()) 
+
+set.seed(413947)
+
+```
+
+## Problem 1
+
+### Part A
+The regression given assumes that there are no differences that are correlated with voting behavior between union members and non-union members. Meaning, assumption that the "treatment" of union membership being IID is not met. Whether these external factors not controlled in the model (race, education level, income, etc., all of which are likely related both to union membership and voting behavior) correlate positively or negatively to union membership or turnout behavior, will cause the bias to be positive or negative. Broadly: groups being free to select into the condition muddies the analysis. To give an example in concrete terms, union members may be paid, on average, more than non-union members. It is known that higher income people tend to vote more. Thus, the coefficient for union membership is positively biased, because income is positive correlated with both the independent variable, union membership, and the dependent variable, vote share. 
+
+### Part B
+
+In this set up, the treatment ($X$) is union membership, the outcome ($Y$), is vote turnout, and parent union membership is the instrument ($Z$). 
+
+Thus, the first stage is, symbolically:
+
+$$E(X|Z) = \gamma + \delta Z$$
+
+Or, applied to our case:
+
+$$E(Union\;member|parent\;union\;member) = \gamma + \delta (parent\;union\;member)$$
+
+The second stage of the regression would be, symbolically:
+
+$$E(Y|Z) = \alpha + \beta_XE(X|Z)$$
+which reduces to 
+$$E(Y|Z) = \alpha + \beta_X(\gamma + \delta Z)$$
+or
+
+$$E(Y|Z) = \tilde\alpha + \tilde\beta Z$$
+
+where $\tilde\alpha \equiv \alpha + \beta_X\gamma$ and $\tilde\beta \equiv \beta_X \delta$. 
+
+The causal effect is $\beta_T = \frac{\tilde\beta}{\delta}$. Using our setup $\frac{\tilde\beta}{\delta}$ is the portion of union membership *explained by* parent union membership. The causal effect if the coefficient from the regression of vote turnout on parent union membership divided by the coefficient from the regression of union membership on parent union membership. The goal of this is the tease out the actual causal effect beyond a simple regression. Basically, it's attempting to find the *actual effect of membership* on vote turnout, rather than *the effect of being the type of person who is likely to join a union*. We are tempering the effect of parent union membership on vote turnout by dividing it by the effect of parent union membership on union membership. In order to trust the causal effect developed here, 2 assumptions must be met beyond the standard OLS ones: (1) parent union membership must have a meaningful effect on union membership and (2) parent union membership must only effect vote turnout through union membership. The first point is intuitive and makes sense here, but the second assumption is not provable and requires setting a theory forward. In this case, I can imagine a scenario where parents in unions are more poltically active and pass those values to their children, making them more likely to vote *whether they join a union or not*. 
+
+### Part C
+
+I would not trust these before and after comparisons of Y as causally produced by X alone in this setup. There is no valid counterfactual against which to compare the change, which is necessary in a difference in differences scenario. In this setup, we would have to assume that the only thing in the world that changed for these union members over time was joining a union. This assumption is implausible. 
+
+### Part D
+
+The parallel trends assumption, meaning that the differences between the treatment and control groups remain the same over time controlling for the treatment and other observable controls, needs to be met here. Basically units need to have fixed unobservable differences. This assumption may not hold if reasonable controls are not added. For example, it is reasonable to assume union members are more secure in their employment status than non union members. If there is a meaningful difference in employment over time within units that are controlled or not, which would be the case here, and that is not controlled for, the parallel trends assumption is not met. This would be important in the particular scenario, because there is likely a relationship between employment status and vote turnout. 
+
+## Problem 2
+
+Read in the data
+
+```{r}
+dta <- read.dta("bhw_data_main.dta")
+```
+
+### Part 1
+```{r}
+dta$treatment_dummy <- ifelse(dta$edu1849_adult_yos > median(dta$edu1849_adult_yos), 1, 0)
+
+# ensuring dummy is binary at 1 or 0 
+stopifnot(dta$treatment_dummy == 1 | dta$treatment_dummy == 0)
+
+# building a matched dataset using genetic matching algo:
+matched <- matchit(treatment_dummy ~ pop1849_young + pop1849_old + area1816_qkm + pop1816_cities_pc + indu1819_texti_pc + steam1849_mining_pc + vieh1816_schaf_landvieh_pc + occ1816_farm_laborer_t_pc + buil1816_publ_pc + chausseedummy + trans1816_freight_pc, 
+                   data = dta, 
+                   method = "genetic")
+
+matched_data <- match.data(matched)
+
+```
+
+### Part 2
+
+```{r}
+
+bivar_ols <- lm(fac1849_total_pc ~ treatment_dummy, data = dta)
+
+full_control_ols <- lm(fac1849_total_pc ~ treatment_dummy + pop1849_young + pop1849_old + area1816_qkm + pop1816_cities_pc + indu1819_texti_pc + steam1849_mining_pc + vieh1816_schaf_landvieh_pc + occ1816_farm_laborer_t_pc + buil1816_publ_pc + chausseedummy + trans1816_freight_pc, data = dta)
+
+full_control_ols_matched <- lm(fac1849_total_pc ~ treatment_dummy + pop1849_young + pop1849_old + area1816_qkm + pop1816_cities_pc + indu1819_texti_pc + steam1849_mining_pc + vieh1816_schaf_landvieh_pc + occ1816_farm_laborer_t_pc + buil1816_publ_pc + chausseedummy + trans1816_freight_pc, data = matched_data)
+
+bivar_iv <- ivreg(fac1849_total_pc ~ treatment_dummy | 
+                                     edu1816_pri_enrol, data = dta)
+
+full_control_iv <- ivreg(fac1849_total_pc ~ treatment_dummy + pop1849_young + pop1849_old + area1816_qkm + pop1816_cities_pc + indu1819_texti_pc + steam1849_mining_pc + vieh1816_schaf_landvieh_pc + occ1816_farm_laborer_t_pc + buil1816_publ_pc + chausseedummy + trans1816_freight_pc | 
+                                          edu1816_pri_enrol + pop1849_young + pop1849_old + area1816_qkm + pop1816_cities_pc + indu1819_texti_pc + steam1849_mining_pc + vieh1816_schaf_landvieh_pc + occ1816_farm_laborer_t_pc + buil1816_publ_pc + chausseedummy + trans1816_freight_pc, data = dta)
+
+```
+
+### Part 3
+
+```{r, results='asis'}
+
+stargazer(bivar_ols, full_control_ols, full_control_ols_matched, bivar_iv, full_control_iv,
+          ci = TRUE,
+          covariate.labels = c("Years of \\\\school > median \\\\in 1849", "Share \\\\pop < 15 years", "Share \\\\pop > 60 years", "County area \\\\(in 1,000 km2)", "Share pop living \\\\in cities 1816", "Looms pc 1819", "Steam engines \\\\in mining pc 1849", "Sheep pc 1816", "Share farm \\\\laborers 1819", "Public buildings \\\\pc 1821", "Paved streets \\\\1815 (dummy)", "Tonnage of \\\\ships pc 1819"),
+          dep.var.labels = "Share factory workers 1849",
+          font.size = "footnotesize",
+          column.sep.width = "0pt")
+
+```
+
+
+### Part 4
+
+The assumptions for causal inference using IV includes the standard OLS assumptions along with (1) the instrument should have a meaningful effect on the treatment and (2) the instrument should only affect the outcome through the treatment. The first assumption seems to be met here: past education levels should affect the education level of a present time, 1816 and 1849 in this case. The exclusion assumption, in this case the assumption that education levels in 1816 only affect the share of factory workers in the population in 1849 through the amount of education in a region in 1849 is more difficult to justify, but it is likely met. I cannot theorize a scenario where past education levels affect a regions employment type outside of current education levels. 
+
+
